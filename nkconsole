@@ -1,0 +1,11 @@
+<?php
+
+require __DIR__.'/autoload.php';
+
+use system\console\Console;
+
+$console = new Console();
+
+$console->run();
+
+ ?>
