@@ -1,0 +1,9 @@
+/config.php
+/resources
+/models
+/library
+/controllers
+/public
+
+!/models/User.php
+!/controllers/ErrorController.php

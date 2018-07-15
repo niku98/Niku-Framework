@@ -56,7 +56,7 @@ class RouteAction
 
 		if(count($actionParameters) > 0){ // If method has parameters, pass some data from get method
 			$firstType = $actionParameters[0]->getType();
-			if(strpos($firstType, 'Request') !== false){
+			if(file_exists($firstType)){
 				$data[] = new $firstType();
 			}
 

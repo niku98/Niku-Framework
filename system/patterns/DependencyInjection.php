@@ -13,9 +13,15 @@ class DependencyInjection extends Singletion
 	 */
 	protected $class;
 
-	public function create($class)
+	public static function create($class)
 	{
+		$this->addClass($class);
+		return $this->createObject();
+	}
 
+	public function createObject()
+	{
+		
 	}
 }
 
