@@ -15,8 +15,8 @@ class RouteAction
 		return $this;
 	}
 
-	public function do($passParameters){
-		$data = $this->getParametersDataFromRequest($passParameters);
+	public function do(){
+		$data = $this->getParametersDataFromRequest();
 		$output = $this->getActionResult(...$data);
 
 		$this->showActionOutPut($output);
@@ -47,7 +47,7 @@ class RouteAction
 		return $cl['class']->{$cl['method']}(...$params);
 	}
 
-	private function getParametersDataFromRequest($passParameters){
+	private function getParametersDataFromRequest(){
 		$request = new Request();
 
 		$actionParameters = $this->getActionParameters();
@@ -55,14 +55,14 @@ class RouteAction
 		$data = array();
 
 		if(count($actionParameters) > 0){ // If method has parameters, pass some data from get method
-			$firstType = $actionParameters[0]->getType();
-			if(file_exists($firstType)){
-				$data[] = new $firstType();
-			}
-
-			if(count($passParameters)){
-				for ($i = 1; $i <= count($passParameters); $i++) {
-					$data[] = $request->get($passParameters[$i]);
+			for ($i = 0; $i < count($actionParameters); $i++) {
+				$type = $actionParameters[$i]->getType();
+				$name = $actionParameters[$i]->getName();
+				if(class_exists((string)$type)){
+					$class = (string)$type;
+					$data[] = new $class();
+				}else{
+					$data[] = $request->get($name);
 				}
 			}
 		}

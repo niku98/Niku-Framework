@@ -8,28 +8,28 @@ use system\supporters\File;
  */
 class Request
 {
-	private $data = array();
+	private static $data = array();
 
 	public function __construct(){
-		$this->data = $_GET;
-		$this->data = array_merge($this->data, $_POST);
+		self::$data = $_GET;
+		self::$data = array_merge(self::$data, $_POST);
 
 		$post_data = [];
 		parse_str(file_get_contents("php://input"), $post_data);
 
-		$this->data = array_merge($this->data, $post_data);
-		$this->data = array_merge($this->data, $_FILES);
-		$this->data = array_merge($this->data, $_COOKIE);
-		$this->data['url'] = current_url();
-		$this->data['previous_url'] = $_SERVER['HTTP_REFERER'] ?? '';
+		self::$data = array_merge(self::$data, $post_data);
+		self::$data = array_merge(self::$data, $_FILES);
+		self::$data = array_merge(self::$data, $_COOKIE);
+		self::$data['url'] = current_url();
+		self::$data['previous_url'] = $_SERVER['HTTP_REFERER'] ?? '';
 	}
 
 	public function __debugInfo(){
-		return $this->data ?? NULL;
+		return self::$data ?? NULL;
 	}
 
 	public function __get($key){
-		return $this->data[$key] ?? NULL;
+		return self::$data[$key] ?? NULL;
 	}
 
 	public function get($param){
@@ -43,7 +43,7 @@ class Request
 
 	public function has($value)
 	{
-		return isset($this->data[$value]);
+		return isset(self::$data[$value]);
 	}
 
 	public function hasFile($key){
@@ -59,7 +59,7 @@ class Request
 	}
 
 	public function file($name){
-		if(!$this->hasFile($name))
+		if(!self::hasFile($name))
 			return NULL;
 
 		if(empty($_FILES[$name]['name'])){
@@ -79,7 +79,7 @@ class Request
 	}
 
 	public function all(){
-		return $this->data;
+		return self::$data;
 	}
 
 	public function cookie($param){
@@ -87,7 +87,7 @@ class Request
 	}
 
 	public function validate(array $rules, array $message = array()){
-		validate($this->data, $rules, $message);
+		validate(self::$data, $rules, $message);
 	}
 }
 

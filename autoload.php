@@ -1,8 +1,8 @@
 <?php
 
 $_NK_LIST_AUTOLOAD = [
+	'system/route/Router',
 	'system/route/Route',
-	'system/route/RouteProcess',
 	'system/route/RoutePrefix',
 	'system/route/RouteAction',
 	'system/supporters/library'

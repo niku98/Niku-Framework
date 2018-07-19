@@ -8,8 +8,6 @@ class DependencyInjection extends Singletion
 {
 	/**
 	 * Content class need inject
-	 *
-	 * @var Closure
 	 */
 	protected $class;
 
@@ -21,7 +19,7 @@ class DependencyInjection extends Singletion
 
 	public function createObject()
 	{
-		
+
 	}
 }
 

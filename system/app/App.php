@@ -29,7 +29,7 @@ class App extends Singleton
 
 	public function handle()
 	{
-		$uri = \RouteProcess::getRequestUrl();
+		$uri = \Route::getRequestUrl();
 
 		if( $uri !== '' && strpos($uri, 'index.') !== false){
 			return redirect('');
@@ -46,7 +46,7 @@ class App extends Singleton
 		}
 
 
-		if(!\RouteProcess::map()){
+		if(!\Route::map()){
 			return response()->status(404)->prepare()->body(view('errors/404'));
 		}
 		Session::lastHandle();

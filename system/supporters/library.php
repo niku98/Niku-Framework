@@ -33,17 +33,11 @@ function app(){
 	return App::getInstance();
 }
 
-function route()
+function route($name, array $data = array())
 {
-	$params = func_get_args();
-	$route = RouteProcess::find($params[0]);
+	$route = Route::find($name);
 
-	if(count($params) > 1){
-		unset($params[0]);
-		return $route->makeUrl(...$params);
-	}
-
-	return $route;
+	return $route->makeUrl($data);
 }
 
 function view($viewName,  $data = array()){
