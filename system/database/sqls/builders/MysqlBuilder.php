@@ -45,6 +45,7 @@ class MysqlBuilder extends QueryBuilder
 		if(!$this->isSelect())
 			$this->addSelectClause(['*']);
 		$sql = trim($this->select.$this->join.$this->on.$this->where.$this->groupBy.$this->having.$this->orderBy.$this->limit.$this->offset);
+		// echo $sql; exit;
 		$this->resetBuilder();
 		return $sql;
 	}
@@ -236,14 +237,14 @@ class MysqlBuilder extends QueryBuilder
 		$this->orderBy = 'ORDER BY ';
 
 		if(!empty($data[0]) && is_string($data[0])){
-			$this->orderBy .= '? ?';
+			$this->orderBy .= '`'.$data[0].'` '.($data[1] ?? 'ASC');
 		}else{
 			$isFirst = true;
 			foreach($data as $col => $dir){
 				if($isFirst){
-					$this->orderBy .= '? ?';
+					$this->orderBy .= '`'.$col.'` '.($dir ?? 'ASC');
 				}else{
-					$this->orderBy .= ', ? ?';
+					$this->orderBy .= ', `'.$col.'` '.($dir ?? 'ASC');
 				}
 				$isFirst = false;
 			}

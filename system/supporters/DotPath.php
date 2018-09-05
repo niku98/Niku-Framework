@@ -1,82 +1,60 @@
 <?php
 namespace system\supporters;
-use system\patterns\Singleton;
+
 /**
- * DotPath class to process path
+ * DotPath
  */
-class DotPath extends Singleton
+class DotPath
 {
 
-	/**
-	 * Raw path from user
-	 *
-	 * @var     string
-	 */
-	private $path;
-
-	/**
-	 * Base path to get file from path
-	 *
-	 * @var     string
-	 */
-	private $base;
-
-	protected function __construct(string $path, string $base = ''){
-		$this->path = $path;
-		$this->base = $base;
-		return $this;
+	private function __construct()
+	{
+		// code...
 	}
 
-
-	/**
-	 * Split '.' character from path
-	 *
-	 * @param     void
-	 * @return    array
-	 */
-	private function splitPath()
+	public static function findFile($base, $dots)
 	{
-		return explode('.', $this->path);
+		$parts = explode('.', $dots);
+		$path = '';
+		$base = trim($base, '/');
+		foreach ($parts as $part) {
+			$path .= '/'.$part;
+			if(file_exists($base.$path)){
+				$dots = ltrim($dots, implode(explode('/', $path), '.'));
+				return [
+					'file' => $base.$path,
+					'last' => $dots
+				];
+			}
+		}
+
+		return false;
 	}
 
-
-	public function joinPath(array $path)
+	public static function findInArray(array $array, string $dots)
 	{
-		return implode($path, '/');
-	}
+		$parts = explode('.', $dots);
+		$finded = null;
+		foreach ($parts as $part) {
+			if($finded == null){
+				if(!isset($array[$part])){
+					return null;
+				}
 
+				$finded = $array[$part];
+			}else{
+				if(!isset($finded[$part])){
+					return null;
+				}
 
-	/**
-	 * Find file by full path
-	 *
-	 * @param     void
-	 * @return    void
-	 * @author
-	 * @copyright
-	 */
-	public function findFile()
-	{
-		$path_parts = $this->splitPath();
-		var_dump(file_exists($path_parts));
-	}
+				$finded = $finded[$part];
+			}
+		}
 
-	public function __toString()
-	{
-		return trim($this->base, '/').'/'.$this->joinPath($this->splitPath());
-	}
-
-	public function setPath(string $path)
-	{
-		$this->path = $path;
-
-		return $this;
-	}
-
-	public function getPath()
-	{
-		return $this->path;
+		return $finded;
 	}
 }
+
 
 
  ?>

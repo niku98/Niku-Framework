@@ -1,13 +1,14 @@
 <?php
 namespace system\supporters;
-use system\patterns\Singleton;
-use system\supporters\Redirect;
-use system\supporters\Session;
+use Redirect;
+use Session;
+use AppException;
+use Database;
 
 /**
  *
  */
-class Validator extends Singleton
+class Validator
 {
 	private $data;
 	private $rules;
@@ -88,9 +89,19 @@ class Validator extends Singleton
 			'action' => 'setNullable',
 			'has_val' => false
 		],
+
+		'file' => [
+			'action' => 'validateFile',
+			'has_val' => false
+		],
+
+		'array' => [
+			'action' => 'validateArray',
+			'has_val' => false
+		],
 	];
 
-	protected function __construct(array $data_to_check = array(), array $rules = array(), array $custom_messages = array())
+	public function __construct(array $data_to_check = array(), array $rules = array(), array $custom_messages = array())
 	{
 		$this->data = $data_to_check;
 		$this->rules = $rules;
@@ -128,6 +139,10 @@ class Validator extends Singleton
 		return empty($this->data) || empty($this->rules) ? false : true;
 	}
 
+	private function findInData($path){
+		return DotPath::findInArray($this->data, $path);
+	}
+
 	private function validateData(){
 		$message = array();
 		foreach ($this->rules as $field => $rule) {
@@ -137,9 +152,9 @@ class Validator extends Singleton
 				if($rulee['name'] == 'nullable'){
 					$checker = $this->setNullable($field);
 				}else{
-					if(empty($this->data[$field]) && $this->isNull($field)){
+					if(empty($this->findInData($field)) && $this->isNull($field)){
 						$checker = true;
-					}else if(!empty($this->data[$field])){
+					}else if(!empty($this->findInData($field))){
 						$checker = $this->validateWithRule($field, $rulee);
 					}else{
 						$checker = false;
@@ -197,8 +212,17 @@ class Validator extends Singleton
 		return $this->allRules[$name]['has_val'];
 	}
 
+	private function isRuleExists($name){
+		return isset($this->allRules[$name]);
+	}
+
 	private function validateWithRule(string $field, array $rule){
 		$name = $rule['name'];
+
+		if(!$this->isRuleExists($rule['name'])){
+			throw new AppException("Rule [$rule[name]] is not exists!");
+		}
+
 		$method = $this->allRules[$name]['action'];
 
 		if($this->ruleHasVal($name)){
@@ -210,16 +234,16 @@ class Validator extends Singleton
 	}
 
 	private function validateEmail(string $field){
-		return (bool)preg_match('/^(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){255,})(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){65,}@)(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22))(?:\.(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22)))*@(?:(?:(?!.*[^.]{64,})(?:(?:(?:xn--)?[a-z0-9]+(?:-[a-z0-9]+)*\.){1,126}){1,}(?:(?:[a-z][a-z0-9]*)|(?:(?:xn--)[a-z0-9]+))(?:-[a-z0-9]+)*)|(?:\[(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){7})|(?:(?!(?:.*[a-f0-9][:\]]){7,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?)))|(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){5}:)|(?:(?!(?:.*[a-f0-9]:){5,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3}:)?)))?(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))(?:\.(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))){3}))\]))$/iD', $this->data[$field]);
+		return (bool)preg_match('/^(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){255,})(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){65,}@)(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22))(?:\.(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22)))*@(?:(?:(?!.*[^.]{64,})(?:(?:(?:xn--)?[a-z0-9]+(?:-[a-z0-9]+)*\.){1,126}){1,}(?:(?:[a-z][a-z0-9]*)|(?:(?:xn--)[a-z0-9]+))(?:-[a-z0-9]+)*)|(?:\[(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){7})|(?:(?!(?:.*[a-f0-9][:\]]){7,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?)))|(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){5}:)|(?:(?!(?:.*[a-f0-9]:){5,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3}:)?)))?(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))(?:\.(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))){3}))\]))$/iD', $this->findInData($field));
 	}
 
 	private function validateRequired(string $key){
-		return empty($this->data[$key]) ? false : true;
+		return empty($this->findInData($key)) ? false : true;
 	}
 
 	private function validateRequiredIf(string $key, $other){
 		if($this->validateRequired($other[0]))
-			return empty($this->data[$key]) ? false : true;
+			return empty($this->findInData($key)) ? false : true;
 		return true;
 	}
 
@@ -235,16 +259,16 @@ class Validator extends Singleton
 
 	/*Validate Date - Time*/
 	private function validateTime(string $field, string $type = 'field'){
-		return (bool)preg_match('/^([0-9]|[0-1][0-9]|2[0-3]):[0-5]?[0-9](:[0-5]?[0-9])?( AM| PM)?$/', empty($this->data[$field]) ? $field : $this->data[$field]);
+		return (bool)preg_match('/^([0-9]|[0-1][0-9]|2[0-3]):[0-5]?[0-9](:[0-5]?[0-9])?( AM| PM)?$/', empty($this->findInData($field)) ? $field : $this->findInData($field));
 	}
 
 	private function validateUrl(string $field){
-		return (bool)preg_match('/^((https|http)?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/', empty($this->data[$field]) ? '' : $this->data[$field]);
+		return (bool)preg_match('/^((https|http)?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/', empty($this->findInData($field)) ? '' : $this->findInData($field));
 	}
 
 	private function validateDate(string $field, string $type = 'field')
 	{
-		$date = $type == 'field' ? $this->parseDate($this->data[$field]) : $this->parseDate($field);
+		$date = $type == 'field' ? $this->parseDate($this->findInData($field)) : $this->parseDate($field);
 		if(count($date) !== 3)
 			return false;
 		return checkdate($date['month'], $date['day'], $date['year']);
@@ -273,7 +297,7 @@ class Validator extends Singleton
 	}
 
 	private function validateDateTime(string $field){
-		$dateTime = $this->splitDateTime($this->data[$field]);
+		$dateTime = $this->splitDateTime($this->findInData($field));
 		if(!$dateTime)
 			return false;
 
@@ -298,33 +322,33 @@ class Validator extends Singleton
 
 	/*Validate Number*/
 	private function validateMax(string $field, $max){
-		if(!isset($this->data[$field]) || !$this->validateNumeric($field))
+		if($this->findInData($field) !== null || !$this->validateNumeric($field))
 			return false;
 
-		return $this->data[$field] <= $max[0];
+		return $this->findInData($field) <= $max[0];
 	}
 
 	private function validateMin(string $field, $min){
-		if(!isset($this->data[$field]) || !$this->validateNumeric($field))
+		if($this->findInData($field) !== null || !$this->validateNumeric($field))
 			return false;
 
-		return $this->data[$field] >= $min[0];
+		return $this->findInData($field) >= $min[0];
 	}
 
 	private function validateNumeric(string $field){
-		if(!isset($this->data[$field]))
+		if($this->findInData($field) !== null)
 			return false;
 
-		return is_numeric($this->data[$field]);
+		return is_numeric($this->findInData($field));
 	}
 	/*End Validate Number*/
 
 	private function validateSame(string $root, $vals){
-		if(!isset($this->data[$root]))
+		if($this->findInData($root) !== null)
 			return false;
 
 		foreach ($vals as $val) {
-			if($this->data[$root] !== $this->data[$val])
+			if($this->findInData($root) !== $this->findInData($val))
 				return false;
 		}
 
@@ -332,27 +356,40 @@ class Validator extends Singleton
 	}
 
 	private function validateMinLength(string $field, $min){
-		return strlen($this->data[$field]) >= $min[0];
+		return strlen($this->findInData($field)) >= $min[0];
 	}
 
 	private function validateMaxLength(string $field, $max){
-		return strlen($this->data[$field]) >= $max[0];
+		return strlen($this->findInData($field)) >= $max[0];
 	}
 
 	private function validateUnique(string $field, array $models){
 		foreach ($models as $model) {
-			$modelAndCol = explode('.', $model);
-			if(count($modelAndCol) < 2)
-				throw new AppException('You must use Unique Validate with this format "unique:Model1.column[, Model2.column2, ...]"');
+			$tableAndCol = explode('.', $model);
+			if(count($tableAndCol) < 2)
+				throw new AppException('You must use Unique Validate with this format "unique:table_1.column[, table_2.column2, ...]"');
 
-			$modelName = '\models\\'.$modelAndCol[0];
-			$column = $modelAndCol[1];
+			$table = $tableAndCol[0];
+			$column = $tableAndCol[1];
 
-			$Model = new $modelName();
-			$existed = $Model->where($column, $this->data[$field])->limit(1)->count();
+			$existed = Database::table($table)->where($column, $this->findInData($field))->limit(1)->count();
 
 			return $existed > 0 ? false : true;
 		}
+	}
+
+	private function validateFile($field)
+	{
+		if($this->findInData($field) !== null && $this->findInData($field)['tmp_name'] != null){
+			return true;
+		}
+
+		return false;
+	}
+
+	private function validateArray(string $field)
+	{
+		return is_array($this->findInData($field));
 	}
 
 	/*---------------------------------

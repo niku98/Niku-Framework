@@ -1,7 +1,7 @@
 <?php
 namespace system\supporters;
-use models\User;
-
+use App\User;
+use Session;
 /**
  * Authentication Class
  */

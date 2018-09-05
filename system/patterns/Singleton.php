@@ -11,7 +11,7 @@ abstract class Singleton
 	{
 	}
 
-	public function getInstance(){
+	public static function getInstance(){
 		$class = get_called_class();
 		if(empty(self::$instance[$class])){
 			self::$instance[$class] = new $class(...func_get_args());

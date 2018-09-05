@@ -1,6 +1,7 @@
 <?php
-use system\app\AppException;
-
+namespace system\route;
+use \AppException;
+use system\route\exception\NotFoundException;
 
 /**
 * Router for dectect uri
@@ -9,36 +10,41 @@ class Route
 {
 	private static $prefix;
 	private static $routers = array();
+	private static $current;
 
-	public function get($uri, $action){
+	public static function get($uri, $action){
 		return Route::addRoute($uri, ['GET'], $action);
 	}
 
-	public function post($uri, $action){
+	public static function post($uri, $action){
 		return Route::addRoute($uri, ['POST'], $action);
 	}
 
-	public function put($uri, $action){
+	public static function put($uri, $action){
 		return Route::addRoute($uri, ['PUT'], $action);
 	}
 
-	public function delete($uri, $action){
+	public static function patch($uri, $action){
+		return Route::addRoute($uri, ['PUT'], $action);
+	}
+
+	public static function delete($uri, $action){
 		return Route::addRoute($uri, ['DELETE'], $action);
 	}
 
-	public function options($uri, $action){
+	public static function options($uri, $action){
 		return Route::addRoute($uri, ['OPTIONS'], $action);
 	}
 
-	public function any($uri, $action){
+	public static function any($uri, $action){
 		return Route::addRoute($uri, [], $action);
 	}
 
-	public function match(array $methods, string $uri, $action){
+	public static function match(array $methods, string $uri, $action){
 		return Route::addRoute($uri, $methods, $action);
 	}
 
-	public function addRoute($base_url, $method, $action){
+	public static function addRoute($base_url, $method, $action){
 		self::$prefix = RoutePrefix::getInstance();
 		if(self::$prefix->url !== ''){
 			$base_url = trim(self::$prefix->url, '/').'/'.trim($base_url, '/');
@@ -56,24 +62,30 @@ class Route
 		return trim($lastUrl, '/');
 	}
 
-	public function map(){
+	public static function map(){
 		$requestUrl = self::getRequestUrl();
+
+		if(strpos($requestUrl, 'api') === 0){
+			Route::prefix('api', function(){
+				loadFile('routes/api.php');
+			});
+		}else{
+			loadFile('routes/web.php');
+		}
+
 		foreach (self::$routers as $router) {
 			if($router->match($requestUrl)){
+				$router->matchTokenIfNeeded();
+				Route::$current = $router;
 				$router->doAction();
-				self::deleteAllRoutes();
-				return true;
+				return;
 			}
 		}
-		self::deleteAllRoutes();
-		return false;
+		throw new NotFoundException("404, Page Not Found!");
+
 	}
 
-	public static function deleteAllRoutes(){
-		self::$routers = NULL;
-	}
-
-	public function find($name)
+	public static function find($name)
 	{
 		foreach (self::$routers as $router) {
 			if($router->name == $name){
@@ -82,7 +94,11 @@ class Route
 		}
 	}
 
-	public function prefix($prefix, $defaultAction, $group = null){
+	public static function current(){
+		return static::$current;
+	}
+
+	public static function prefix($prefix, $defaultAction, $group = null){
 		self::$prefix = RoutePrefix::getInstance();
 		$prefix_url = '';
 

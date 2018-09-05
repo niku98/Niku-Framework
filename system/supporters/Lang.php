@@ -2,7 +2,7 @@
 namespace system\supporters;
 use system\patterns\Singleton;
 use system\supporters\DotPath;
-use system\app\AppException;
+use \AppException;
 
 /**
  *

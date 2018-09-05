@@ -4,9 +4,9 @@ namespace system\database\sqls;
 use system\database\sqls\connections\ConnectionFactory;
 use system\database\sqls\builders\QueryBuilderFactory;
 use system\database\DatabaseInterface;
-use system\app\AppException;
+use \AppException;
 use system\supporters\Paginator;
-use system\supporters\Request;
+use Request;
 
 
 class Database implements DatabaseInterface
@@ -27,10 +27,8 @@ class Database implements DatabaseInterface
 	*/
 	function __construct($tableName = '')
 	{
-		global $_CONFIG;
-
-		$driver = $this->connection ?? $_CONFIG['DB_CONNECTION'];
-		$database = $this->database ?? $_CONFIG['DB_DATABASE'];
+		$driver = $this->connection ?? app()->config('DB_CONNECTION');
+		$database = $this->database ?? app()->config('DB_DATABASE');
 
 		$this->connector = ConnectionFactory::create($driver, $database);
 		$this->builder = QueryBuilderFactory::create($driver);
@@ -101,26 +99,26 @@ class Database implements DatabaseInterface
 	}
 
 	public function where(){
-		if(func_num_args() == 1){
-			if(self::$rawSql === true){
-				$this->builder->addRawWhere('', func_get_args()[0]);
-				self::$rawSql = false;
+		// if(func_num_args() == 1){
+		// 	if(self::$rawSql === true){
+		// 		$this->builder->addRawWhere('', func_get_args()[0]);
+		// 		self::$rawSql = false;
+		//
+		// 		return $this;
+		// 	}
+		// }
+		// elseif(func_num_args() == 2)
+		// 	$this->builder->addWhereClause('', func_get_args()[0], '=', func_get_args()[1]);
+		// elseif (func_num_args() >= 3 && func_num_args() <= 5) {
+		// 	$this->builder->addWhereClause('', ...func_get_args());
+		// }else{
+		// 	throw new AppException("Number of parameters is not valid for method where()", 1);
+		// 	die();
+		// }
+		//
+		// $this->connector->logicParamsProcess('where', ...func_get_args());
 
-				return $this;
-			}
-		}
-		elseif(func_num_args() == 2)
-			$this->builder->addWhereClause('', func_get_args()[0], '=', func_get_args()[1]);
-		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addWhereClause('', ...func_get_args());
-		}else{
-			throw new AppException("Number of parameters is not valid for method where()", 1);
-			die();
-		}
-
-		$this->connector->logicParamsProcess('where', ...func_get_args());
-
-		return $this;
+		return $this->andWhere(...func_get_args());
 	}
 
 	public function andWhere(){
@@ -330,8 +328,6 @@ class Database implements DatabaseInterface
 
 		$this->builder->addOrderClause($data);
 
-		$this->connector->addOrderParams($data);
-
 		return $this;
 	}
 
@@ -420,7 +416,7 @@ class Database implements DatabaseInterface
 
 	// Get first result of query result
 	// Return First result value
-	public function getFirst(){
+	public function first(){
 		$this->connector->exec($this->builder->getSelectQuery())->get_result();
 		return $this->connector->fetch();
 	}
@@ -448,14 +444,14 @@ class Database implements DatabaseInterface
 		return $this->connector->fetch($type);
 	}
 
-	public function pagination(int $per_page, array $items = [])
+	public function pagination(int $per_page, array $items = NULL)
 	{
 		$old_builder = clone $this->builder;
 		$old_connector = clone $this->connector;
 
 		$total_items = $old_connector->exec($old_builder->getSelectQuery())->get_result()->num_rows;
-		if(empty($items) || !count($items)){
-			$request = new Request();
+		if(!is_array($items)){
+			$request = Request::getInstance();
 			$page = $request->has('page') ? $request->get('page') : 1;
 			$offset = ($page - 1) * $per_page;
 

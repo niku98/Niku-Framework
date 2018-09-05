@@ -9,8 +9,7 @@ use mysqli;
 class MysqlConnection extends SqlConnection
 {
 	public function __construct($database){
-		global $_CONFIG;
-		$this->conn = new mysqli($_CONFIG['DB_HOST'].':'.$_CONFIG['DB_PORT'], $_CONFIG['DB_USER'], $_CONFIG['DB_PASSWORD'], $database);
+		$this->conn = new mysqli(app()->config('DB_HOST').':'.app()->config('DB_PORT'), app()->config('DB_USER'), app()->config('DB_PASSWORD'), $database);
 		$this->conn->set_charset('utf8');
 	}
 

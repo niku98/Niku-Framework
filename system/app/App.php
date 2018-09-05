@@ -3,18 +3,36 @@ namespace system\app;
 use system\patterns\Singleton;
 use system\app\AppException;
 use system\middlewares\TokenMiddleware;
-use system\supporters\Session;
+use Session;
+use system\app\exception\ErrorHandler;
 
 /**
  * App class
  */
-class App extends Singleton
+class App
 {
-	private $locale = '';
+	use HasLoader;
 
-	protected function __construct(){
-		global $_CONFIG;
-		$this->locale = $_CONFIG['NK_LOCALE'];
+	private $locale = '';
+	private $config;
+	private static $instance;
+
+	private function __construct(){
+		$this->config = require_once root_path.'/config.php';
+		$this->locale = $this->config['NK_LOCALE'];
+	}
+
+	public static function getInstance()
+	{
+		if(!self::$instance){
+			self::$instance = new static;
+		}
+
+		return self::$instance;
+	}
+
+	public function config($key){
+		return $this->config[$key] ?? NULL;
 	}
 
 	public function locale(string $locale = ''){
@@ -32,23 +50,13 @@ class App extends Singleton
 		$uri = \Route::getRequestUrl();
 
 		if( $uri !== '' && strpos($uri, 'index.') !== false){
-			return redirect('');
+			return redirect()->to('');
 		}
 
 		Session::firstHandle();
 
-		if(strpos($uri, 'api') === 0){
-			\RoutePrefix::getInstance()->url = 'api';
-			loadFile('routes/api.php');
-		}else{
-			loadFile('routes/web.php');
-			TokenMiddleware::handle();
-		}
-
-
-		if(!\Route::map()){
-			return response()->status(404)->prepare()->body(view('errors/404'));
-		}
+		\Route::map();
+		
 		Session::lastHandle();
 	}
 
@@ -65,13 +73,7 @@ class App extends Singleton
 	}
 
 	protected function registerErrorHandler(){
-		global $_CONFIG;
-		error_reporting(E_ERROR | E_CORE_ERROR | E_PARSE | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING | E_USER_ERROR | E_RECOVERABLE_ERROR | E_NOTICE | E_WARNING);
-		if($_CONFIG['NK_ERROR_REPORTING'] == true){
-			ini_set('display_errors',0);
-			set_error_handler('eHandler');
-			register_shutdown_function("shutDownHandler");
-		}
+		ErrorHandler::getHandler();
 	}
 }
 

@@ -1,6 +1,6 @@
 <?php
 namespace system\supporters;
-use system\app\AppException;
+use \AppException;
 /**
  * File class - Control file input
  */
@@ -19,6 +19,11 @@ class File
 	public function saveTo(string $public_path, string $new_name = '')
 	{
 		$path = root_path.'public/'.$public_path.'/'.$new_name;
+
+		if(!is_dir(root_path.'public/'.$public_path)){
+			mkdir(root_path.'public/'.$public_path);
+		}
+
 		if($this->type === 'saved')
 			return file_put_contents($path, $this->getContent()) !== false ? new File($path) : false;
 		else{
@@ -67,7 +72,15 @@ class File
 
 	public function getMimeType(){
 		$allType = require root_path.'resources/base/mime_type.php';
-		return $allType[strtolower($this->getExtension())] ?? NULL;
+		$type = $this->type === 'saved' ? $allType[strtolower($this->getExtension())] ?? NULL : $this->data['type'];
+		return $type ?? NULL;
+	}
+
+	public function getMimeTypeWithExtension($extenstion)
+	{
+		$allType = require root_path.'resources/base/mime_type.php';
+
+		return $allType[strtolower($extenstion)] ?? NULL;
 	}
 
 	public function convertBase64(bool $web = true)
@@ -106,12 +119,12 @@ class File
 			return false;
 		}
 
-		if($this->getMimeType() === NULL){
+		if($this->checkHeaderWithCurrentExtension() === false){
 			return false;
 		}
 
-		if(strtolowser($this->getExtension()) !== 'jpg' && strtolowser($this->getExtension()) !== 'jpeg'
-		&& strtolowser($this->getExtension()) !== 'png' && strtolowser($this->getExtension()) !== 'gif' ){
+		if(strtolower($this->getExtension()) !== 'jpg' && strtolower($this->getExtension()) !== 'jpeg'
+		&& strtolower($this->getExtension()) !== 'png' && strtolower($this->getExtension()) !== 'gif' ){
 			return false;
 		}
 
@@ -126,12 +139,34 @@ class File
 		return true;
 	}
 
+	public function isWord()
+	{
+		if(!$this->isValid()){
+			return false;
+		}
+
+		if($this->checkHeaderWithCurrentExtension() === false){
+			return false;
+		}
+
+		if(strtolower($this->getExtension()) !== 'docx'){
+			return false;
+		}
+
+
+		if(strpos($this->getMimeType(), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') === false){
+			return false;
+		}
+
+		return true;
+	}
+
 	public function isSpreadSheet(){
 		if(!$this->isValid()){
 			return false;
 		}
 
-		if($this->getMimeType() === NULL){
+		if($this->checkHeaderWithCurrentExtension() === false){
 			return false;
 		}
 
@@ -145,6 +180,19 @@ class File
 		if(strtolower($this->getExtension()) !== 'csv' && strtolower($this->getExtension()) !== 'xlsx'
 		&& strtolower($this->getExtension()) !== 'ods'){
 
+			return false;
+		}
+
+		return true;
+	}
+
+	public function checkHeaderWithCurrentExtension()
+	{
+		$header = $this->getMimeType();
+		$extenstion = $this->getExtension();
+		$true_header = $this->getMimeTypeWithExtension($extenstion);
+
+		if($header !== $true_header){
 			return false;
 		}
 

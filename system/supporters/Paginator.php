@@ -1,6 +1,6 @@
 <?php
 namespace system\supporters;
-use system\supporters\Request;
+use \Request;
 
 /**
  * Paginator
@@ -40,9 +40,8 @@ class Paginator
 	}
 
 	private function firstCal(){
-		$request = new Request();
 		$this->totalPages(true);
-		$this->current($request->get('page') ?? 1);
+		$this->current(Request::get('page') ?? 1);
 		$this->previous(true);
 		$this->next(true);
 		return $this;
@@ -183,8 +182,7 @@ class Paginator
 
 	public function pageLinkCurrent(int $page)
 	{
-		$request = new Request();
-		$url = $request->url;
+		$url = Request::url();
 		if(strpos($url, '?') !== false){
 			if(strpos($url, 'page=') !== false){
 				$url = preg_replace('(page=[\d]+)', 'page='.$page, $url);

@@ -1,8 +1,12 @@
 <?php
-use system\supporters\Request;
-use system\supporters\Redirect;
-use system\supporters\Response;
+namespace system\route;
 
+use system\supporters\facades\Request;
+use system\supporters\facades\Redirect;
+use system\supporters\facades\Response;
+use system\supporters\facades\Facade;
+use ReflectionMethod;
+use ReflectionFunction;
 /**
  * Route action
  */
@@ -48,7 +52,6 @@ class RouteAction
 	}
 
 	private function getParametersDataFromRequest(){
-		$request = new Request();
 
 		$actionParameters = $this->getActionParameters();
 
@@ -58,11 +61,10 @@ class RouteAction
 			for ($i = 0; $i < count($actionParameters); $i++) {
 				$type = $actionParameters[$i]->getType();
 				$name = $actionParameters[$i]->getName();
-				if(class_exists((string)$type)){
-					$class = (string)$type;
-					$data[] = new $class();
+				if(class_exists($type)){
+					$data[] = app()->make($type);
 				}else{
-					$data[] = $request->get($name);
+					$data[] = Request::get($name);
 				}
 			}
 		}
@@ -121,11 +123,11 @@ class RouteAction
 	}
 
 	private function getClassMethod(){
-		$class = 'controllers\\'.explode('@', $this->action)[0];
+		$class = 'App\\Controllers\\'.explode('@', $this->action)[0];
 		$action = explode('@', $this->action)[1];
 
 		return [
-			'class' => new $class(),
+			'class' => app()->make($class),
 			'method' => $action
 		];
 	}

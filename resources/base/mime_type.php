@@ -246,6 +246,7 @@ return [
 	'pre' => 'application/x-freelance',
 	'tsi' => 'audio/tsp-audio',
 	'doc' => 'application/msword',
+	'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 	'uu' => 'text/x-uuencode',
 	'shar' => 'application/x-shar',
 	'ksh' => 'text/x-script.ksh',

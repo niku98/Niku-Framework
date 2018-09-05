@@ -7,9 +7,9 @@ namespace system\console;
 class CreateFile
 {
 	public static function model($name){
-		$path = __DIR__.'/../../models/'.$name.'.php';
+		$path = __DIR__.'/../../app/'.$name.'.php';
 		$content = '<?php
-namespace models;
+namespace App;
 use system\model\Model;
 
 
@@ -26,11 +26,11 @@ class '.$name.' extends Model
 	}
 
 	public function controller($name){
-		$path = __DIR__.'/../../controllers/'.$name.'.php';
+		$path = __DIR__.'/../../app/Controllers/'.$name.'.php';
 		$content = '<?php
-namespace controllers;
+namespace App\Controllers;
 use system\supporters\Controller;
-use system\supporters\Request;
+use system\supporters\facades\Request;
 
 class '.$name.' extends Controller
 {
@@ -43,9 +43,9 @@ class '.$name.' extends Controller
 	}
 
 	public function middleware($name){
-		$path = __DIR__.'/../../middlewares/'.$name.'.php';
+		$path = __DIR__.'/../../app/Middlewares/'.$name.'.php';
 		$content = '<?php
-namespace middlewares;
+namespace App\Middlewares;
 use system\middlewares\BaseMiddleware;
 use system\app\AppException;
 use system\supporters\Request;

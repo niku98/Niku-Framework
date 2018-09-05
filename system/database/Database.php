@@ -30,8 +30,7 @@ class Database
 	 */
 	public static function table()
 	{
-		global $_CONFIG;
-		$type = $_CONFIG['DB_TYPE'];
+		$type = app()->config('DB_TYPE');
 
 		switch ($type) {
 			case 'sql':

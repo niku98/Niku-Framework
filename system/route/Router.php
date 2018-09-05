@@ -1,6 +1,11 @@
 <?php
-use system\supporters\Request;
-use system\app\AppException;
+namespace system\route;
+
+use system\supporters\facades\Request;
+use \AppException;
+use system\supporters\CsrfToken;
+use Session;
+use system\route\exception\TokenException;
 
 /**
  * Router
@@ -67,16 +72,33 @@ class Router
 		return $this;
 	}
 
-
+	/**
+	 * __toString magic method, return url
+	 *
+	 * @param     void
+	 * @return    string
+	 */
 	public function __toString(){
 		return url($this->uri_show);
 	}
 
+	/**
+	 * Name this router.
+	 *
+	 * @param	  string $name
+	 * @return    system\route\Router
+	 */
 	public function name($name){
 		$this->name = $name;
 		return $this;
 	}
 
+	/**
+	 * Add Middleware to this router
+	 *
+	 * @param	  string
+	 * @return    system\route\Router
+	 */
 	public function middleware($name){
 		$this->middlewares[] = $name;
 		return $this;
@@ -239,8 +261,9 @@ class Router
 			}
 
 			if(preg_match_all('/'.$regex.'/', $check_parts[$k], $matches)){
-				if(!empty($matches[0][0])){
+				if(!empty($matches[0][0]) && $matches[0][0] === $check_parts[$k]){
 					$_GET[$base] = $check_parts[$k];
+					Request::getInstance()->$base = $check_parts[$k];
 					$matched++;
 				}
 			}
@@ -298,6 +321,16 @@ class Router
 			return $middlewareCheck;
 		}
 		return true;
+	}
+
+	public function matchTokenIfNeeded()
+	{
+		$request = new Request;
+		if(!Request::isMethod('get') && !Request::isMethod('options')){
+			if(!Request::has('csrf_token') || CsrfToken::checkToken($request->csrf_token) === false || $request->csrf_token !== Session::get('csrf_token')){
+				throw new TokenException();
+			}
+		}
 	}
 
 	public function doAction(){

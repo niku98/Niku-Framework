@@ -1,40 +1,18 @@
 <?php
+require_once __DIR__.'/system/NkAutoLoad.php';
+NkAutoLoad::getLoader(__DIR__);
 
-$_NK_LIST_AUTOLOAD = [
-	'system/route/Router',
-	'system/route/Route',
-	'system/route/RoutePrefix',
-	'system/route/RouteAction',
-	'system/supporters/library'
-];
+NkAutoLoad::file([
+	'system/supporters/helpers'
+]);
 
-$_NK_LIST_NAMESPACE = [
+NkAutoLoad::namespace([
 	'MongoDB' => 'system/database/source_php_libs/mongodb/src',
-];
+	'App' => 'app'
+]);
 
-foreach ($_NK_LIST_AUTOLOAD as $class) {
-	require_once __DIR__.'/'.$class.'.php';
-}
+$aliases = (require __DIR__.'/config/app.php')['alias'];
 
-function __autoload($className){
-	global $_NK_LIST_NAMESPACE;
-	$checkNameSpace = 0;
-
-	foreach ($_NK_LIST_NAMESPACE as $namespace => $source) {
-		if(strpos($className, $namespace) === 0){
-			$checkNameSpace = 1;
-
-			$className = $source.'/'.ltrim($className, $namespace);
-			break;
-		}
-	}
-
-	$className = explode('\\', $className);
-	$className = implode($className, '/');
-
-	if(file_exists(__DIR__.'/'.$className.'.php')){
-		require_once __DIR__.'/'.$className.'.php';
-	}
-}
+NkAutoLoad::alias($aliases);
 
  ?>
