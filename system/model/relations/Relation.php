@@ -1,7 +1,7 @@
 <?php
 namespace system\model\relations;
-use system\database\Database;
 use system\model\Model;
+use AppException;
 
 abstract class Relation
 {
@@ -14,7 +14,7 @@ abstract class Relation
 	protected $mainModel;
 
 	/**
-	 * Child Model in relation
+	 * Sub Model in relation
 	 *
 	 * @var system\model\Model
 	 */
@@ -25,14 +25,14 @@ abstract class Relation
 	 *
 	 * @var string
 	 */
-	protected $localKey;
+	protected $mainKey;
 
 	/**
 	 * Foreign Key in relation
 	 *
 	 * @var string
 	 */
-	protected $foreignKey;
+	protected $subKey;
 
 	/**
 	 * Middle Table in relation - Just use for many to many relation
@@ -41,27 +41,69 @@ abstract class Relation
 	 */
 	protected $middleTable;
 
-	/**
-	 * Database to build query and connect to server
-	 *
-	 * @var system\database\Database
-	 */
-	protected $db;
 
-
-	public function __construct(Model $mainModel, Model $subModel, string $localKey, string $foreignKey, string $middleTable = '')
+	public function __construct(Model $mainModel, Model $subModel, string $mainKey, string $subKey, string $middleTable = '')
 	{
 		$this->mainModel = $mainModel;
 		$this->subModel = $subModel;
-		$this->localKey = $localKey;
-		$this->foreignKey = $foreignKey;
+		$this->mainKey = $mainKey;
+		$this->subKey = $subKey;
 		$this->middleTable = $middleTable;
-		$this->db = new Database();
+		return $this;
 	}
 
-	public function where(){
-		
+	public function __call($method, $params)
+	{
+		$this->subModel = $this->subModel->$method(...$params);
+		if(!is_object($this->subModel) || !is_a($this->subModel, 'system\model\Model', true)){
+			return $this->subModel;
+		}
+		return $this;
 	}
+
+	protected function getMainModelKeyVal()
+	{
+		return $this->mainModel->{$this->mainKey};
+	}
+
+	protected function getSubModelKeyVal()
+	{
+		return $this->subModel->{$this->subKey};
+	}
+
+	public function insert()
+	{
+		$data = $this->processInsertData(...func_get_args());
+		return $this->subModel->insert($data);
+	}
+
+	public function delete()
+	{
+		$this->processConditionDelete();
+		return $this->subModel->delete();
+	}
+
+	public function count()
+	{
+		$this->processConditionInRelation();
+		return $this->subModel->count();
+	}
+
+	public function get()
+	{
+		$this->processConditionInRelation();
+		return $this->getResult();
+	}
+
+	public function update()
+	{
+		$this->processConditionInRelation();
+		return $this->subModel->update();
+	}
+
+	abstract protected function processInsertData();
+	abstract protected function getResult();
+	abstract protected function processConditionInRelation();
 }
 
 

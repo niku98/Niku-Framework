@@ -14,7 +14,7 @@ abstract class QueryBuilder
 	protected $delete = '';
 	protected $select = '';
 
-	protected $join = '';
+	protected $joins = array();
 
 	protected $where = '';
 	protected $on = '';
@@ -30,7 +30,7 @@ abstract class QueryBuilder
 
 	protected function resetBuilder(){
 		$this->select = '';
-		$this->join = '';
+		$this->joins = array();
 		$this->on = '';
 		$this->where = '';
 		$this->groupBy = '';
@@ -57,14 +57,10 @@ abstract class QueryBuilder
 	abstract public function addDeleteClause();
 	abstract public function addSelectClause(array $cols);
 
-	abstract public function addJoinClause(string $type, array $data);
+	abstract public function addJoinClause(string $type, $table, $column1 = NULL, $operator = NULL, $column2 = NULL);
 
-	abstract public function addWhereClause();
-	abstract public function addRawWhere(string $rel, string $raw);
-	abstract public function addOnClause();
-	abstract public function addRawOn(string $rel, string $raw);
-	abstract public function addHavingClause();
-	abstract public function addRawHaving(string $rel, string $raw);
+	abstract public function addLogicClause($type, $logic, $column, $operator, $param1, $param2 = NULL);
+	abstract public function addRawLogicClause(string $type, string $rel, string $raw);
 
 	abstract public function addGroupByClause(array $data);
 	abstract public function addOrderClause(array $data);

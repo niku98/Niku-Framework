@@ -1,10 +1,7 @@
 /config.php
 /resources
-/routes
 /models
 /library
 /controllers
-/public
-
 !/models/User.php
 !/controllers/ErrorController.php

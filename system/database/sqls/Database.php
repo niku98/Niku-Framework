@@ -74,68 +74,44 @@ class Database implements DatabaseInterface
 		return $this;
 	}
 
-	public function join($tables){
-		$tables = is_array($tables) ? $tables : func_get_args();
-
-		$this->builder->addJoinClause('INNER', $tables);
+	public function join($table, $column1 = NULL, $operator = NULL, $column2 = NULL){
+		$this->builder->addJoinClause('INNER', $table, $column1, $operator, $column2);
 
 		return $this;
 	}
 
-	public function leftJoin($tables){
-		$tables = is_array($tables) ? $tables : func_get_args();
-
-		$this->builder->addJoinClause('LEFT', $tables);
+	public function leftJoin($table, $column1 = NULL, $operator = NULL, $column2 = NULL){
+		$this->builder->addJoinClause('LEFT', $table, $column1, $operator, $column2);
 
 		return $this;
 	}
 
-	public function rightJoin($tables){
-		$tables = is_array($tables) ? $tables : func_get_args();
-
-		$this->builder->addJoinClause('RIGHT', $tables);
+	public function rightJoin($tables, $column1 = NULL, $operator = NULL, $column2 = NULL){
+		$this->builder->addJoinClause('RIGHT', $table, $column1, $operator, $column2);
 
 		return $this;
 	}
 
 	public function where(){
-		// if(func_num_args() == 1){
-		// 	if(self::$rawSql === true){
-		// 		$this->builder->addRawWhere('', func_get_args()[0]);
-		// 		self::$rawSql = false;
-		//
-		// 		return $this;
-		// 	}
-		// }
-		// elseif(func_num_args() == 2)
-		// 	$this->builder->addWhereClause('', func_get_args()[0], '=', func_get_args()[1]);
-		// elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-		// 	$this->builder->addWhereClause('', ...func_get_args());
-		// }else{
-		// 	throw new AppException("Number of parameters is not valid for method where()", 1);
-		// 	die();
-		// }
-		//
-		// $this->connector->logicParamsProcess('where', ...func_get_args());
-
-		return $this->andWhere(...func_get_args());
-	}
-
-	public function andWhere(){
 		if(func_num_args() == 1){
 			if(self::$rawSql === true){
-				$this->builder->addRawWhere('AND', func_get_args()[0]);
+				$this->builder->addRawLogicClause('where', 'AND', func_get_args()[0]);
 				self::$rawSql = false;
 
-				return $this;
+			}else if(is_callable(func_get_args()[0])){
+				$this->builder->groupLogicStart('where');
+				$callable = func_get_args()[0];
+				$callable($this);
+				$this->builder->groupEnd('where');
 			}
+			return $this;
 		}
 		elseif(func_num_args() == 2)
-			$this->builder->addWhereClause('AND', func_get_args()[0], '=', func_get_args()[1]);
+			$this->builder->addLogicClause('where', 'AND', func_get_args()[0], '=', func_get_args()[1]);
 		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addWhereClause('AND', ...func_get_args());
+			$this->builder->addLogicClause('where', 'AND', ...func_get_args());
 		}else{
-			throw new AppException("Number of parameters is not valid for method andWhere()", 1);
+			throw new AppException("Number of parameters is not valid for method where()", 1);
 			die();
 		}
 
@@ -147,16 +123,21 @@ class Database implements DatabaseInterface
 	public function orWhere(){
 		if(func_num_args() == 1){
 			if(self::$rawSql === true){
-				$this->builder->addRawWhere('OR', func_get_args()[0]);
+				$this->builder->addRawLogicClause('where', 'OR', func_get_args()[0]);
 				self::$rawSql = false;
 
-				return $this;
+			}else if(is_callable(func_get_args()[0])){
+				$this->builder->groupLogicStart('where');
+				$callable = func_get_args()[0];
+				$callable($this);
+				$this->builder->groupEnd('where');
 			}
+			return $this;
 		}
 		elseif(func_num_args() == 2)
-			$this->builder->addWhereClause('OR', func_get_args()[0], '=', func_get_args()[1]);
+			$this->builder->addLogicClause('where', 'OR', func_get_args()[0], '=', func_get_args()[1]);
 		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addWhereClause('OR', ...func_get_args());
+			$this->builder->addLogicClause('where', 'OR', ...func_get_args());
 		}else{
 			throw new AppException("Number of parameters is not valid for method orWhere()", 1);
 			die();
@@ -167,113 +148,26 @@ class Database implements DatabaseInterface
 		return $this;
 	}
 
-	public function on(){
-		if(func_num_args() == 1){
-			if(self::$rawSql === true){
-				$this->builder->addRawOn('', func_get_args()[0]);
-				self::$rawSql = false;
-
-				return $this;
-			}
-		}
-		elseif(func_num_args() == 2)
-			$this->builder->addOnClause('', func_get_args()[0], '=', func_get_args()[1]);
-		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addOnClause('', ...func_get_args());
-		}else{
-			throw new AppException("Number of parameters is not valid for method on()", 1);
-			die();
-		}
-
-		$this->connector->logicParamsProcess('on', ...func_get_args());
-
-		return $this;
-	}
-
-	public function andOn(){
-		if(func_num_args() == 1){
-			if(self::$rawSql === true){
-				$this->builder->addRawOn('AND', func_get_args()[0]);
-				self::$rawSql = false;
-
-				return $this;
-			}
-		}
-		elseif(func_num_args() == 2)
-			$this->builder->addOnClause('AND', func_get_args()[0], '=', func_get_args()[1]);
-		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addOnClause('AND', ...func_get_args());
-		}else{
-			throw new AppException("Number of parameters is not valid for method andOn()", 1);
-			die();
-		}
-
-		$this->connector->logicParamsProcess('on', ...func_get_args());
-
-		return $this;
-	}
-
-	public function orOn(){
-		if(func_num_args() == 1){
-			if(self::$rawSql === true){
-				$this->builder->addRawOn('OR', func_get_args()[0]);
-				self::$rawSql = false;
-
-				return $this;
-			}
-		}
-		elseif(func_num_args() == 2)
-			$this->builder->addOnClause('OR', func_get_args()[0], '=', func_get_args()[1]);
-		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addOnClause('OR', ...func_get_args());
-		}else{
-			throw new AppException("Number of parameters is not valid for method orOn()", 1);
-			die();
-		}
-
-		$this->connector->logicParamsProcess('on', ...func_get_args());
-
-		return $this;
-	}
-
 	public function having(){
 		if(func_num_args() == 1){
 			if(self::$rawSql === true){
-				$this->builder->addRawHaving('', func_get_args()[0]);
+				$this->builder->addRawLogicClause('having', 'AND', func_get_args()[0]);
 				self::$rawSql = false;
 
-				return $this;
+			}else if(is_callable(func_get_args()[0])){
+				$this->builder->groupLogicStart('having');
+				$callable = func_get_args()[0];
+				$callable($this);
+				$this->builder->groupEnd('having');
 			}
+			return $this;
 		}
 		elseif(func_num_args() == 2)
-			$this->builder->addHavingClause('', func_get_args()[0], '=', func_get_args()[1]);
+			$this->builder->addLogicClause('having', 'AND', func_get_args()[0], '=', func_get_args()[1]);
 		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addHavingClause('', ...func_get_args());
+			$this->builder->addLogicClause('having', 'AND', ...func_get_args());
 		}else{
 			throw new AppException("Number of parameters is not valid for method having()", 1);
-			die();
-		}
-
-		$this->connector->logicParamsProcess('having', ...func_get_args());
-
-		return $this;
-	}
-
-	public function andHaving(){
-		if(func_num_args() == 1){
-			if(self::$rawSql === true){
-				$this->builder->addRawHaving('AND', func_get_args()[0]);
-				self::$rawSql = false;
-
-				return $this;
-			}
-		}
-		elseif(func_num_args() == 2)
-			$this->builder->addHavingClause('AND', func_get_args()[0], '=', func_get_args()[1]);
-		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addHavingClause('AND', ...func_get_args());
-		}else{
-			throw new AppException("Number of parameters is not valid for method andHaving()", 1);
 			die();
 		}
 
@@ -285,16 +179,21 @@ class Database implements DatabaseInterface
 	public function orHaving(){
 		if(func_num_args() == 1){
 			if(self::$rawSql === true){
-				$this->builder->addRawHaving('OR', func_get_args()[0]);
+				$this->builder->addRawLogicClause('having', 'OR', func_get_args()[0]);
 				self::$rawSql = false;
 
-				return $this;
+			}else if(is_callable(func_get_args()[0])){
+				$this->builder->groupLogicStart('having');
+				$callable = func_get_args()[0];
+				$callable($this);
+				$this->builder->groupEnd('having');
 			}
+			return $this;
 		}
 		elseif(func_num_args() == 2)
-			$this->builder->addHavingClause('OR', func_get_args()[0], '=', func_get_args()[1]);
+			$this->builder->addLogicClause('having', 'OR', func_get_args()[0], '=', func_get_args()[1]);
 		elseif (func_num_args() >= 3 && func_num_args() <= 5) {
-			$this->builder->addHavingClause('OR', ...func_get_args());
+			$this->builder->addLogicClause('having', 'OR', ...func_get_args());
 		}else{
 			throw new AppException("Number of parameters is not valid for method orHaving()", 1);
 			die();

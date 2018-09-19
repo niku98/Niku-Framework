@@ -12,7 +12,7 @@ class DotPath
 		// code...
 	}
 
-	public static function findFile($base, $dots)
+	public static function findFile(string $base, string $dots)
 	{
 		$parts = explode('.', $dots);
 		$path = '';
@@ -52,6 +52,12 @@ class DotPath
 		}
 
 		return $finded;
+	}
+
+	public static function findFileArray(string $base, string $dots)
+	{
+		$base = static::findFile($base, $dots);
+		
 	}
 }
 

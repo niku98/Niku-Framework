@@ -16,18 +16,13 @@ interface DatabaseInterface
 	public function distinct();
 	public function select($data = ['*']);
 
-	public function join($tables);
-	public function leftJoin($tables);
-	public function rightJoin($tables);
+	public function join($tables, $column1, $operator = NULL, $column2 = NULL);
+	public function leftJoin($tables, $column1, $operator = NULL, $column2 = NULL);
+	public function rightJoin($tables, $column1, $operator = NULL, $column2 = NULL);
 
 	public function where();
-	public function andWhere();
 	public function orWhere();
-	public function on();
-	public function andOn();
-	public function orOn();
 	public function having();
-	public function andHaving();
 	public function orHaving();
 
 	public function orderBy($data);

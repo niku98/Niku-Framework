@@ -1,6 +1,8 @@
 <?php
 
 namespace system\supporters\facades;
+use system\requests\Request as RealRequest;
+
 /**
  * Request class
  * Do: Get params from user request
@@ -8,7 +10,7 @@ namespace system\supporters\facades;
 class Request extends Facade
 {
 	protected static function realClassName(){
-		return 'system\\requests\\Request';
+		return RealRequest::class;
 	}
 
 	protected static function isSingleton()

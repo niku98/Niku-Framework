@@ -11,7 +11,6 @@ class Factory implements FactoryPattern
 		$params = func_get_args();
 		$name = $params[0];
 		unset($params[0]);
-		var_dump($params);
 		switch ($name) {
 			case 'HasOne':
 				return new HasOne(...$params);
@@ -28,6 +27,8 @@ class Factory implements FactoryPattern
 			case 'BelongsTo':
 				return new BelongsTo(...$params);
 				break;
+			default:
+				throw new AppException("[$name] Relation is not exists!");
 		}
 	}
 }

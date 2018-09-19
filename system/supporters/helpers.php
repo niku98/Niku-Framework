@@ -3,6 +3,9 @@ use system\supporters\View;
 use system\supporters\Validator;
 use system\supporters\Lang;
 
+/*-------------------------------
+URL AND PATH
+-------------------------------*/
 function url(string $uPath = '')
 {
 	// output: /myproject/index.php
@@ -22,6 +25,18 @@ function url(string $uPath = '')
 	return $protocol.$hostName.$path.'/'.$uPath;
 }
 
+function asset($path)
+{
+	return url(trim($path, '/'));
+}
+
+function current_url(){
+	return Request::url();
+}
+
+/*--------------------------
+QUICK FUNCTIONS
+--------------------------*/
 function app(){
 	return App::getInstance();
 }
@@ -113,19 +128,14 @@ function csrf_token()
 
 function add_script($scriptName){
 	?>
-	<script type="text/javascript" src="<?php echo url('public/js/'.$scriptName.'.js') ?>"></script>
+	<script type="text/javascript" src="<?php echo asset('js/'.$scriptName.'.js') ?>"></script>
 	<?php
 }
 
 function add_style($styleName){
 	?>
-	<link rel="stylesheet" href="<?php echo url('public/css/'.$styleName.'.css') ?>">
+	<link rel="stylesheet" href="<?php echo asset('css/'.$styleName.'.css') ?>">
 	<?php
-}
-
-function asset($path)
-{
-	return url('public/'.trim($path, '/'));
 }
 
 function curl($url, array $data = array()){
@@ -175,10 +185,6 @@ function isRegularExpression($string) {
 	$isRegularExpression = preg_match($string, "") !== FALSE;
 	restore_error_handler();
 	return $isRegularExpression;
-}
-
-function current_url(){
-	return Request::url();
 }
 
 function scriptEscape(string $html){

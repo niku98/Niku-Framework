@@ -4,7 +4,8 @@
 */
 
 Route::get('', function(){
-	return view('index');
+	return asset('css');
+	// return redirect();
 });
 
 ?>

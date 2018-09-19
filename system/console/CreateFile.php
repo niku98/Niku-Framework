@@ -16,7 +16,7 @@ use system\model\Model;
 class '.$name.' extends Model
 {
 	protected $table = \''.strtolower($name).'\'; // Table Name
-	protected $identification = \'id\'; // Primary key in Table
+	protected $primaryKey = \'id\'; // Primary key in Table
 	protected $properties = [\'something\']; // Another properties in Table
 }
 
@@ -30,7 +30,7 @@ class '.$name.' extends Model
 		$content = '<?php
 namespace App\Controllers;
 use system\supporters\Controller;
-use system\supporters\facades\Request;
+use system\requests\Request;
 
 class '.$name.' extends Controller
 {
@@ -47,8 +47,7 @@ class '.$name.' extends Controller
 		$content = '<?php
 namespace App\Middlewares;
 use system\middlewares\BaseMiddleware;
-use system\app\AppException;
-use system\supporters\Request;
+use system\requests\Request;
 
 class '.$name.' extends BaseMiddleware
 {

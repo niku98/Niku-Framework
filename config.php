@@ -17,7 +17,8 @@ return [
 	'DB_PORT' => '3306',
 	'DB_USER' => 'root',
 	'DB_PASSWORD' => '',
-	'DB_DATABASE' => 'manga_web',
+	'DB_DATABASE' => 'tlu_infotech',
+	// 'DB_DATABASE' => 'security_index_dashboard',
 
 	/*
 	* Session config

@@ -1,6 +1,7 @@
 <?php
 namespace system\database\sqls\builders;
 use system\database\sqls\builders\QueryBuilder;
+use AppException;
 /**
 * Mysql Query Builder
 */
@@ -44,8 +45,7 @@ class MysqlBuilder extends QueryBuilder
 	public function getSelectQuery(){
 		if(!$this->isSelect())
 			$this->addSelectClause(['*']);
-		$sql = trim($this->select.$this->join.$this->on.$this->where.$this->groupBy.$this->having.$this->orderBy.$this->limit.$this->offset);
-		// echo $sql; exit;
+		$sql = trim($this->select.implode($this->joins, ' ').' '.$this->where.$this->groupBy.$this->having.$this->orderBy.$this->limit.$this->offset);
 		$this->resetBuilder();
 		return $sql;
 	}
@@ -103,124 +103,43 @@ class MysqlBuilder extends QueryBuilder
 		return !empty($this->select);
 	}
 
-	public function addJoinClause(string $type, array $data){
-		$this->join .= $type.' JOIN ';
-		$this->join .= implode($data, ', ').' ';
-
+	public function addJoinClause(string $type, $table, $column1 = NULL, $operator = NULL, $column2 = NULL){
+		$join = new JoinBuilder($type, $table);
+		if(!is_null($column1)){
+			$join->on($column1, $operator, $column2);
+		}
+		$this->joins[] = $join;
 		return $this;
 	}
 
-	public function addWhereClause(){
-		if (func_num_args() >= 3 && func_num_args() <= 5) {
-			if(!in_array(strtoupper(func_get_args()[2]), $this->operators)){
-				throw new Exception("Operator ".func_get_args()[1]." is not suppoted!", 1);
-				die();
-			}
+	public function addLogicClause($type, $logic, $column, $operator, $param1, $param2 = NULL)
+	{
+		$this->$type;
+		if(strpos($this->$type, strtoupper($type)) === false){
+			$this->$type = strtoupper($type).' ';
+		}else if($this->$type[strlen($this->$type) - 2] != '('){
+			$this->$type .= $logic.' ';
 		}
 
-		$data = func_get_args();
-
-		if(strpos($this->where, 'WHERE') === false){
-			$this->where = 'WHERE ';
+		if(strpos(strtoupper($operator), 'BETWEEN') !== false){
+			$this->$type .= $column.' '.strtoupper($operator).' ? AND ? ';
+		}elseif(strpos(strtoupper($operator), 'IN') !== false){
+			$this->$type .= $column.' '.strtoupper($operator).' ( '.str_repeat('?, ', count($param1) - 1).'? ) ';
 		}else{
-			$this->where .= $data[0].' ';
-		}
-		if(strpos($data[2], 'BETWEEN') != false){
-			$this->where .= $data[1].' '.strtoupper($data[2]).' ? AND ? ';
-		}elseif(strpos(strtoupper($data[2]), 'IN') !== false){
-			$this->where .= $data[1].' '.strtoupper($data[2]).' ( '.str_repeat('?, ', count($data[3]) - 1).'? ) ';
-		}else{
-			$this->where .= $data[1].' '.strtoupper($data[2]).' ? ';
+			$this->$type .= $column.' '.strtoupper($operator).' ? ';
 		}
 
 		return $this;
 	}
 
-	public function addRawWhere(string $rel, string $raw){
-		if(strpos($this->where, 'WHERE') === false){
-			$this->where = 'WHERE ';
+	public function addRawLogicClause(string $type, string $rel, string $raw){
+		if(strpos($this->$type, strtoupper($type)) === false){
+			$this->$type = strtoupper($type).' ';
 		}else{
-			$this->where .= $rel.' ';
+			$this->$type .= $rel.' ';
 		}
 
-		$this->where .= $raw.' ';
-
-		return $this;
-	}
-
-	public function addOnClause(){
-		if (func_num_args() >= 3 && func_num_args() <= 5) {
-			if(!in_array(strtoupper(func_get_args()[2]), $this->operators)){
-				throw new Exception("Operator ".func_get_args()[1]." is not suppoted!", 1);
-				die();
-			}
-		}
-
-		$data = func_get_args();
-
-		if(strpos($this->on, 'ON') === false){
-			$this->on = 'ON ';
-		}else{
-			$this->on .= $data[0].' ';
-		}
-
-		if(strpos($data[2], 'BETWEEN') != false){
-			$this->on .= $data[1].' '.strtoupper($data[2]).' ? AND ? ';
-		}elseif(strpos($data[2], 'IN') != false){
-			$this->on .= $data[1].' '.strtoupper($data[2]).' ( '.str_repeat('?, ', count($data[3]) - 1).'? ) ';
-		}else{
-			$this->on .= $data[1].' '.strtoupper($data[2]).' ? ';
-		}
-
-		return $this;
-	}
-
-	public function addRawOn(string $rel, string $raw){
-		if(strpos($this->on, 'ON') === false){
-			$this->on = 'ON ';
-		}else{
-			$this->on .= $rel.' ';
-		}
-
-		$this->on .= $raw.' ';
-
-		return $this;
-	}
-
-	public function addHavingClause(){
-		if (func_num_args() >= 3 && func_num_args() <= 5) {
-			if(!in_array(strtoupper(func_get_args()[2]), $this->operators)){
-				throw new Exception("Operator ".func_get_args()[1]." is not suppoted!", 1);
-				die();
-			}
-		}
-
-		$data = func_get_args();
-
-		if(strpos($this->having, 'HAVING') === false){
-			$this->having = 'HAVING ';
-		}else{
-			$this->having .= $data[0].' ';
-		}
-
-		if(strpos($data[2], 'BETWEEN') != false){
-			$this->having .= $data[1].' '.strtoupper($data[2]).' ? AND ? ';
-		}elseif(strpos($data[2], 'IN') != false){
-			$this->having .= $data[1].' '.strtoupper($data[2]).' ( '.str_repeat('?, ', count($data[3]) - 1).'? ) ';
-		}else{
-			$this->having .= $data[1].' '.strtoupper($data[2]).' ? ';
-		}
-		return $this;
-	}
-
-	public function addRawHaving(string $rel, string $raw){
-		if(strpos($this->having, 'HAVING') === false){
-			$this->having = 'HAVING ';
-		}else{
-			$this->having .= $rel.' ';
-		}
-
-		$this->having .= $raw.' ';
+		$this->$type .= $raw.' ';
 
 		return $this;
 	}
@@ -251,6 +170,23 @@ class MysqlBuilder extends QueryBuilder
 		}
 
 		$this->orderBy .= ' ';
+		return $this;
+	}
+
+	public function groupLogicStart($clause = NULL, $logic = 'AND')
+	{
+		if(strpos($this->$clause, strtoupper($clause)) === false){
+			$this->$clause = strtoupper($clause).' ';
+		}else{
+			$this->$clause .= strtoupper($logic).' ';
+		}
+		$this->$clause .= '( ';
+		return $this;
+	}
+
+	public function groupEnd($clause = NULL)
+	{
+		$this->$clause .= ') ';
 		return $this;
 	}
 

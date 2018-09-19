@@ -1,15 +1,13 @@
 <?php
-
 namespace system\supporters\facades;
-use system\responses\Redirect as RealRedirect;
+use system\supporters\Time as RealTime;
 /**
- * Request class
- * Do: Get params from user request
+ * Session
  */
-class Redirect extends Facade
+class Time extends Facade
 {
 	protected static function realClassName(){
-		return RealRedirect::class;
+		return RealTime::class;
 	}
 
 	protected static function isSingleton()

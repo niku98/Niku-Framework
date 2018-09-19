@@ -35,100 +35,15 @@ class Builder
 		$this->db = Database::table($model->getTable());
 	}
 
+	public function __call($method, $params)
+	{
+		$this->db->$method(...$params);
+		return $this;
+	}
+
 	/*----------------------------------------
 	BUILDER METHODS
 	----------------------------------------*/
-
-	public function select($data = ['*'])
-	{
-		$data = is_array($data) ? $data : func_get_args();
-		$this->db->select($data);
-		return $this;
-	}
-
-	public function join($tables){
-		$this->db->join($tables);
-		return $this;
-	}
-
-	public function leftJoin($tables){
-		$this->db->leftJoin($tables);
-		return $this;
-	}
-
-	public function rightJoin($tables){
-		$this->db->rightJoin($tables);
-
-		return $this;
-	}
-
-	public function where(){
-		$this->db->where(...func_get_args());
-		return $this;
-	}
-
-	public function andWhere(){
-		$this->db->andWhere(...func_get_args());
-
-		return $this;
-	}
-
-	public function orWhere(){
-		$this->db->orWhere(...func_get_args());
-
-		return $this;
-	}
-
-	public function on(){
-		$this->db->on(...func_get_args());
-		return $this;
-	}
-
-	public function andOn(){
-		$this->db->andOn(...func_get_args());
-		return $this;
-	}
-
-	public function orOn(){
-		$this->db->orOn(...func_get_args());
-		return $this;
-	}
-
-	public function having(){
-		$this->db->having(...func_get_args());
-		return $this;
-	}
-
-	public function andHaving(){
-		$this->andHaving(...func_get_args());
-		return $this;
-	}
-
-	public function orHaving(){
-		$this->db->orHaving(...func_get_args());
-		return $this;
-	}
-
-	public function groupBy($data){
-		$this->db->groupBy($data);
-		return $this;
-	}
-
-	public function orderBy($data){
-		$this->db->orderBy($data);
-
-		return $this;
-	}
-
-	public function limit(int $data){
-		$this->db->limit($data);
-		return $this;
-	}
-
-	public function offset(int $data){
-		$this->db->offset($data);
-		return $this;
-	}
 
 	public function pagination(int $per_page)
 	{

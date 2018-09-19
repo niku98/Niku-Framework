@@ -1,6 +1,8 @@
 <?php
 namespace system\model;
 use system\patterns\abstracts\HasDataProperty;
+use AppException;
+
 /**
  * Parent Model for another model extends
  */
@@ -9,7 +11,7 @@ class Model
 	use HasRelation;
 	use HasDataProperty;
 
-	protected $identification = 'id';
+	protected $primaryKey = 'id';
 	protected $table;
 
 
@@ -22,19 +24,23 @@ class Model
 
 	public function __construct(array $data = array()){
 		$this->data = $data;
+
+		return $this;
 	}
 
 	public function __set(string $name, $value){
-		if(!in_array($name, $this->hiddens))
+		if(!in_array($name, $this->hiddens)){
 			$this->data[$name] = $value;
+		}
 	}
 
 	public function __get(string $name){
-		if(!in_array($name, $this->hiddens))
+		if(!in_array($name, $this->hiddens)){
 			if(!empty($this->data[$name]))
-			 	return $this->data[$name];
+				return $this->data[$name];
+		}
 
-			throw new AppException($name.' is undefined!');
+		throw new AppException($name.' is undefined!');
 	}
 
 	public function __debugInfo(){
@@ -76,6 +82,16 @@ class Model
 		return new static($data);
 	}
 
+	public function getPrimaryKey()
+	{
+		return $this->primaryKey;
+	}
+
+	public function getPrimaryKeyVal()
+	{
+		return $this->{$this->primaryKey};
+	}
+
 	/*----------------------------------------
 	FINAL METHODS
 	----------------------------------------*/
@@ -91,7 +107,7 @@ class Model
 	public static function find($value){
 		$object = new static();
 
-		$data = $object->where($object->identification, $value)->first();
+		$data = $object->where($object->primaryKey, $value)->first();
 		return $data;
 	}
 
@@ -116,11 +132,11 @@ class Model
 	}
 
 	public function delete(){
-		$identification = $this->identification;
+		$primaryKey = $this->primaryKey;
 
 
-		if(!empty($this->data[$identification])){
-			return $this->where($identification, $this->$identification)->delete();
+		if(!empty($this->data[$primaryKey])){
+			return $this->where($primaryKey, $this->$primaryKey)->delete();
 		}
 
 		return $this->newBuilder()->delete();
@@ -129,14 +145,14 @@ class Model
 	public function save(){
 
 
-		$identification = $this->identification;
+		$primaryKey = $this->primaryKey;
 
-		if(!empty($this->data[$identification])){
-			$affected_rows = $this->where($identification, $this->$identification)->update($this->data)->affected_rows();
+		if(!empty($this->data[$primaryKey])){
+			$affected_rows = $this->where($primaryKey, $this->$primaryKey)->update($this->data)->affected_rows();
 			return $affected_rows != 0 ? true : false;
 		}else{
 			$this->insert($this->data);
-			$this->$identification = $this->insert_id();
+			$this->$primaryKey = $this->insert_id();
 			return $this->db->insert_id() != 0 ? true : false;
 		}
 

@@ -128,7 +128,7 @@ class ErrorHandler
 	{
 		if(strpos($message, 'Stack trace:') !== false){
 			$message = explode('Stack trace:', $message)[0];
-			$message = substr($message, strpos($message, ':') + 1, strpos($message, 'in', -1) - strpos($message, ':'));
+			// $message = substr($message, strpos($message, ':') + 1);
 		}
 
 		return $message;

@@ -1,18 +1,15 @@
 <?php
 namespace system\supporters;
-use system\patterns\Singleton;
 /**
  * Time class
  */
-class Time extends Singleton
+class Time
 {
-	private $time;
 	private $from_time;
 	private $to_time;
 
-	protected function __construct(string $time, $from_time = '', $to_time = '')
+	public function __construct($from_time = '', $to_time = '')
 	{
-		$this->time = $time;
 
 		if(!empty($from_time))
 			$this->from($from_time);

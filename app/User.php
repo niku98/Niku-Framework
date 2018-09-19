@@ -6,16 +6,16 @@ use system\model\Model;
  */
 class User extends Model
 {
-	protected $identification = 'id';
+	protected $primaryKey = 'id';
 	protected $table = 'users';
 
-	protected $properties = ['username', 'passsword', 'displayname', 'age', 'role', 'salt_token'];
+	protected $properties = ['username', 'passsword', 'name', 'auth', 'created_at', 'updated_at'];
 
 	public function save(){
-		$identification = $this->identification;
+		$primaryKey = $this->primaryKey;
 		$this->changeTable();
-		if(!empty($this->data[$identification])){
-			self::$db->where($identification, $this->$identification)->update($this->data);
+		if(!empty($this->data[$primaryKey])){
+			self::$db->where($primaryKey, $this->$primaryKey)->update($this->data);
 			if(self::$db->affected_rows() != 0)
 				return true;
 			return false;
@@ -25,15 +25,15 @@ class User extends Model
 			$this->password = md5($this->password).md5($this->salt_token);
 
 			self::$db->insert($this->data);
-			$this->$identification = self::$db->insert_id();
-			if($this->$identification != 0)
+			$this->$primaryKey = self::$db->insert_id();
+			if($this->$primaryKey != 0)
 				return true;
 		}
 		return false;
 	}
 
 	public function roles(){
-		return $this->belongsToMany('App\Role', 'users_roles', 'role_id', 'user_id');
+		return $this->belongsToMany('App\Role', 'role_user', 'user_id', 'role_id');
 	}
 }
 

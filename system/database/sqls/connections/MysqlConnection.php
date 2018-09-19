@@ -2,6 +2,7 @@
 namespace system\database\sqls\connections;
 use system\database\sqls\connections\SqlConnection;
 use mysqli;
+use AppException;
 
 /**
  * Mysql Connection
@@ -20,14 +21,14 @@ class MysqlConnection extends SqlConnection
 				$this->query->bind_param(str_repeat('s', count($this->bindParams)), ...$this->bindParams);
 			}
 			if(!$this->query->execute()){
-				die($this->query->error);
+				throw new AppException($this->query->error);
 			}
 			$this->affected_rows = $this->query->affected_rows;
 			$this->insert_id = $this->query->insert_id;
 			$this->resetData();
 			return $this;
 		}else{
-			die($this->conn->error);
+			throw new AppException($this->conn->error);
 		}
 	}
 
