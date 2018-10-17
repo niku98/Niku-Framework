@@ -1,5 +1,5 @@
 <?php
-use system\supporters\View;
+use system\view\View;
 use system\supporters\Validator;
 use system\supporters\Lang;
 
@@ -20,9 +20,9 @@ function url(string $uPath = '')
 	// output: http://
 	$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https://'?'https://':'http://';
 
-	$uPath = ltrim($uPath, '/');
+	$uPath = trim($uPath, '/');
 
-	return $protocol.$hostName.$path.'/'.$uPath;
+	return $uPath != '' ? $protocol.$hostName.$path.'/'.$uPath : $protocol.$hostName.$path;
 }
 
 function asset($path)

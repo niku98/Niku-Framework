@@ -18,7 +18,9 @@ class Request
 
 		$this->data = $post_vars;
 
-		$this->data = array_merge($this->data, $_REQUEST);
+		$this->data = array_merge($this->data, $_GET);
+		$this->data = array_merge($this->data, $_POST);
+		$this->data = array_merge($this->data, $_COOKIE);
 
 		//Get Header Information
 		$this->headers = getallheaders();
@@ -26,7 +28,8 @@ class Request
 
 	public function url()
 	{
-		return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+		$url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+		return rtrim($url, '/');
 	}
 
 	public function previous_url()

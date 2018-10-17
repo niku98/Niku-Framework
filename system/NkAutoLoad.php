@@ -135,7 +135,6 @@ class NkAutoLoad
 	private static function requireFile(string $path)
 	{
 		$file = rtrim(self::$base_path, '/').'/'.trim($path, '/').'.php';
-
 		if(file_exists($file)){
 			require_once $file;
 		}

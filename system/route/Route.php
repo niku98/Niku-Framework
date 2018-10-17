@@ -57,7 +57,7 @@ class Route
 	public static function getRequestUrl(){
 		$dirName = dirname($_SERVER['PHP_SELF']);
 		$requestUrl = urldecode($_SERVER['REQUEST_URI']);
-		$lastUrl = ltrim(trim($requestUrl, '/'), trim($dirName, '/'));
+		$lastUrl = str_replace(trim($dirName, '/'), '', trim($requestUrl, '/'));
 		$lastUrl = explode('?', $lastUrl)[0];
 		return trim($lastUrl, '/');
 	}

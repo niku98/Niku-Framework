@@ -57,7 +57,8 @@ class DotPath
 	public static function findFileArray(string $base, string $dots)
 	{
 		$base = static::findFile($base, $dots);
-		
+		$array = require $base['file'];
+		return static::findInArray($array, $base['last']);
 	}
 }
 

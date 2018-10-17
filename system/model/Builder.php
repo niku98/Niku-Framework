@@ -86,6 +86,16 @@ class Builder
 		return $this->model->newInstance($result);
 	}
 
+	public function firstOrNew($data)
+	{
+		$obj = $this->first();
+		if(is_null($obj)){
+			return $this->model->newInstance($data);
+		}
+
+		return $obj;
+	}
+
 	public function get(){
 		$list_array = $this->db->get();
 

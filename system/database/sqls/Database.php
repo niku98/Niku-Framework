@@ -47,13 +47,18 @@ class Database implements DatabaseInterface
 		return $this;
 	}
 
+	public final function query($sql)
+	{
+		$this->connector->exec($sql);
+		return $this;
+	}
+
 	/*----------------------------------------
 	QUERY BUILDER FUNCTIONS
 	----------------------------------------*/
 
-	public final static function table($name){
-		$called = get_called_class();
-		return new $called($name);
+	public final function table($name){
+		return $this->changeTable($name);
 	}
 
 	public final static function raw(string $sql){
@@ -323,7 +328,9 @@ class Database implements DatabaseInterface
 	// Get number of rows result
 	// Return integer - num_rows
 	public function count(){
-		$this->connector->exec($this->builder->getSelectQuery())->get_result();
+		if($this->connector->num_rows == -1){
+			$this->connector->exec($this->builder->getSelectQuery())->get_result();
+		}
 		return $this->connector->num_rows;
 	}
 

@@ -81,7 +81,12 @@ class Response
 
 	public function __toString()
 	{
-		return $this->prepare()->getBody();
+		return $this->prepare()->getLastBody() ?? '';
+	}
+
+	public function show()
+	{
+		echo $this->prepare()->getLastBody() ?? '';
 	}
 
 	public function prepare(){
@@ -105,13 +110,40 @@ class Response
 		return $this;
 	}
 
-	public function body(string $body){
+	public function body($body){
 		$this->body = $body;
 		return $this;
 	}
 
-	public function getBody(){
-		return $this->body;
+	public function getLastBody(){
+		return $this->processBody();
+	}
+
+	private function processBody()
+	{
+		if($this->body != NULL){
+			if( ( !is_array( $this->body ) ) && ( ( !is_object( $this->body ) && settype( $this->body, 'string' ) !== false ) ||
+			( is_object( $this->body ) && method_exists( $this->body, '__toString' ) ) ) ){
+				return (string)$this->body;
+			}
+			elseif(!is_array($this->body)){
+				if(strpos(get_class($this->body), 'Redirect') !== false)
+					return $this->body->go();
+				elseif(strpos(get_class($this->body), 'Response') !== false){
+					return $this->body;
+				}elseif (strpos(get_class($this->body), 'View') !== false) {
+					return $this->body->getLayout();
+				}else{
+					if(method_exists($this->body, 'toJson')){
+						return $this->body->toJson();
+					}else{
+						return json_encode((array)$this->body);
+					}
+				}
+			}else{
+				return json_encode($this->body);
+			}
+		}
 	}
 
 	public function status(int $code){

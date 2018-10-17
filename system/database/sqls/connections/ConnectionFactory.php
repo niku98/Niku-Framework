@@ -2,6 +2,7 @@
 namespace system\database\sqls\connections;
 use system\patterns\Factory;
 use system\database\sqls\connections\MysqlConnection;
+use AppException;
 
 /**
  * Connection Factory

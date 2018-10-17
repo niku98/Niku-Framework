@@ -13,7 +13,7 @@ abstract class SqlConnection
 
 	public $affected_rows = 0;
 	public $insert_id = 0;
-	public $num_rows = 0;
+	public $num_rows = -1;
 
 	/*----------------------------------------
 	DATA PROPERTIES

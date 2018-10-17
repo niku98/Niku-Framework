@@ -192,6 +192,8 @@ class Router
 			}
 		}
 
+		$this->uri_show = rtrim($this->uri_show, '/');
+
 		return $this;
 	}
 

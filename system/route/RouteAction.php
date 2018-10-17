@@ -1,10 +1,8 @@
 <?php
 namespace system\route;
 
-use system\supporters\facades\Request;
-use system\supporters\facades\Redirect;
-use system\supporters\facades\Response;
-use system\supporters\facades\Facade;
+use Request;
+use Redirect;
 use ReflectionMethod;
 use ReflectionFunction;
 /**
@@ -24,18 +22,6 @@ class RouteAction
 		$output = $this->getActionResult(...$data);
 
 		$this->showActionOutPut($output);
-	}
-
-	private function is_callable(){
-		return is_callable($this->action);
-	}
-
-	private function getActionParameters(){
-		if($this->is_callable()){
-			return $this->getFunctionParameters();
-		}
-
-		return $this->getMethodParameters();
 	}
 
 	private function getActionResult(){
@@ -72,41 +58,21 @@ class RouteAction
 		return $data;
 	}
 
-	private function showActionOutPut($output){
-		if($output != NULL){
-			if( ( !is_array( $output ) ) && ( ( !is_object( $output ) && settype( $output, 'string' ) !== false ) ||
-			( is_object( $output ) && method_exists( $output, '__toString' ) ) ) ){
-				echo response()->body($output);
-			}
-			elseif(!is_array($output)){
-				if(strpos(get_class($output), 'Redirect') !== false)
-					$output->go();
-				elseif(strpos(get_class($output), 'Response') !== false){
-					echo $output;
-				}else{
-					ob_start();
-
-					echo '<pre>';
-					var_dump($output);
-					echo '</pre>';
-
-					$body = ob_get_clean();
-					echo response()->body($body);
-				}
-			}else{
-				ob_start();
-
-				echo '<pre>';
-				var_dump($output);
-				echo '</pre>';
-
-				$body = ob_get_clean();
-				echo response()->body($body);
-			}
+	private function getActionParameters(){
+		if($this->is_callable()){
+			return $this->getFunctionParameters();
 		}
+
+		return $this->getMethodParameters();
 	}
 
+	private function showActionOutPut($output){
+		response()->body($output)->show();
+	}
 
+	private function is_callable(){
+		return is_callable($this->action);
+	}
 
 	private function getFunctionParameters(){
 		$t = new ReflectionFunction($this->action);

@@ -28,16 +28,16 @@ class Database
 	 * @param	  string $table
 	 * @return    NoSqlDatabase/SqlDatabase
 	 */
-	public static function table()
+	public static function __callStatic($method, $params)
 	{
 		$type = app()->config('DB_TYPE');
 
 		switch ($type) {
 			case 'sql':
-				return new SqlDatabase(...func_get_args());
+				return (new SqlDatabase())->$method(...$params);
 				break;
 			case 'nosql':
-				return new NoSqlDatabase(...func_get_args());
+				return (new NoSqlDatabase())->$method(...$params);
 			default:
 				throw new AppException("Database type [$type] is not supported!");
 				break;

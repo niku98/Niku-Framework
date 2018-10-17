@@ -7,7 +7,7 @@ namespace system\database;
  */
 interface DatabaseInterface
 {
-	public static function table($name);
+	public function table($name);
 
 	public function insert(array $data);
 	public function update(array $data);

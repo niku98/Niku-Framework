@@ -1,5 +1,6 @@
 <?php
-namespace system\supporters;
+namespace system\view;
+use AppException;
 /**
  * View Class to get view for controller
  */
@@ -9,6 +10,7 @@ class View
 	protected $file;
 	protected $layout;
 	private $data = array();
+	private $deleteAfterRun = false;
 
 
 	public function __construct(string $folder, string $file = '',array $data = array())
@@ -27,14 +29,34 @@ class View
 			extract($this->data);
 		}
 
-		$path = root_path.trim($this->base_path, '/').'/'.$this->folder.'/'.$this->file.'.php';
+		$path = $this->getConvertedFilePath();
 
 		ob_start();
 		require_once($path);
 		$this->layout = ob_get_contents();
 		ob_end_clean();
-
+		if($this->deleteAfterRun == true){
+			unlink($path);
+		}
 		return $this;
+	}
+
+	private function getConvertedFilePath()
+	{
+		$path_1 = root_path.trim($this->base_path, '/').'/'.$this->folder.'/'.$this->file.'.php';
+		if(file_exists($path_1)){
+			return $path_1;
+		}
+
+		$path_2 = root_path.trim($this->base_path, '/').'/'.$this->folder.'/'.$this->file.'.niku.php';
+
+		if(!file_exists($path_2)){
+			throw new AppException('File path ['.root_path.trim($this->base_path, '/').'/'.$this->folder.'/'.$this->file.'] not found!');
+		}
+
+		$this->deleteAfterRun = true;
+
+		return (new NikuTemplate($path_2))->convert()->save()->getSavedPath();
 	}
 
 	public function setBasePath(string $base_path){
@@ -64,28 +86,13 @@ class View
 		return $this;
 	}
 
-	public function getPartial(string $path, array $data = array()){
-		if(!empty($data) && is_array($data)){
-			extract($data);
-		}
-
-		$path = root_path.trim($this->base_path, '/').'/'.$path.'.php';
-
-		ob_start();
-		require_once($path);
-		$layout = ob_get_contents();
-		ob_end_clean();
-
-		return $layout;
-	}
-
 	public function with(array $data)
 	{
 		$this->data = $data;
 		return $this;
 	}
 
-	public function __toString(){
+	public function getLayout(){
 		$this->getFileLayout();
 		return $this->layout;
 	}

@@ -10,7 +10,7 @@ return [
 		'Router' => system\route\Router::class,
 		'RoutePrefix' => system\route\RoutePrefix::class,
 		'RouteAction' => system\route\RouteAction::class,
-		'View' => system\supporters\View::class,
+		'View' => system\view\View::class,
 		'Request' => system\supporters\facades\Request::class,
 		'Response' => system\supporters\facades\Response::class,
 		'Session' => system\supporters\facades\Session::class,

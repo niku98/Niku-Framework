@@ -36,7 +36,7 @@ class Model
 
 	public function __get(string $name){
 		if(!in_array($name, $this->hiddens)){
-			if(!empty($this->data[$name]))
+			if(isset($this->data[$name]))
 				return $this->data[$name];
 		}
 
@@ -105,10 +105,9 @@ class Model
 	}
 
 	public static function find($value){
-		$object = new static();
-
-		$data = $object->where($object->primaryKey, $value)->first();
-		return $data;
+		$called = get_called_class();
+		$primaryKey = get_class_vars($called)['primaryKey'];
+		return static::where($primaryKey, $value)->first();
 	}
 
 	public static function findBy(string $key, $value)
@@ -120,15 +119,7 @@ class Model
 			throw new AppException("Column $key is not $called's property!");
 		}
 
-		$object = new static();
-
-		$data = $object->where($key, $value)->first()->toArray();
-		if(empty($data))
-			return false;
-
-		unset($object);
-		$object = new static($data);
-		return $object;
+		return static::where($key, $value)->first();
 	}
 
 	public function delete(){
@@ -143,17 +134,14 @@ class Model
 	}
 
 	public function save(){
-
-
 		$primaryKey = $this->primaryKey;
 
 		if(!empty($this->data[$primaryKey])){
 			$affected_rows = $this->where($primaryKey, $this->$primaryKey)->update($this->data)->affected_rows();
 			return $affected_rows != 0 ? true : false;
 		}else{
-			$this->insert($this->data);
-			$this->$primaryKey = $this->insert_id();
-			return $this->db->insert_id() != 0 ? true : false;
+			$this->$primaryKey = $this->insert($this->data)->insert_id();
+			return $this->$primaryKey != 0 ? true : false;
 		}
 
 		return false;

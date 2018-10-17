@@ -55,7 +55,7 @@ class MysqlBuilder extends QueryBuilder
 	----------------------------------------*/
 
 	public function addInsertClause(array $cols){
-		$this->insert = 'INSERT INTO `'.$this->table.'` ';
+		$this->insert = 'INSERT INTO '.$this->table.' ';
 		$this->insert .= '( '.implode($cols, ', ').' )';
 		$this->insert .= ' VALUES ';
 		$this->insert .= '( '. str_repeat('?, ', count($cols) - 1) .'? )';
@@ -64,7 +64,7 @@ class MysqlBuilder extends QueryBuilder
 	}
 
 	public function addInsertManyClause(array $cols, int $num_values){
-		$this->insertMany = 'INSERT INTO `'.$this->table.'` ';
+		$this->insertMany = 'INSERT INTO '.$this->table.' ';
 		$this->insertMany .= '( '.implode($cols, ', ').' )';
 		$this->insertMany .= ' VALUES ';
 		$value = '( '. str_repeat('?, ', count($cols) - 1) .'? )';
@@ -75,13 +75,13 @@ class MysqlBuilder extends QueryBuilder
 	}
 
 	public function addUpdateClause(array $cols){
-		$this->update = 'UPDATE `'.$this->table.'` ';
+		$this->update = 'UPDATE '.$this->table.' ';
 		$this->update .= 'SET '.implode($cols, ' = ?, ').' = ? ';
 		return $this;
 	}
 
 	public function addDeleteClause(){
-		$this->delete = 'DELETE FROM `'.$this->table.'` ';
+		$this->delete = 'DELETE FROM '.$this->table.' ';
 		return $this;
 	}
 
@@ -95,7 +95,7 @@ class MysqlBuilder extends QueryBuilder
 		if($this->distinct){
 			$this->select .= 'DISTINCT ';
 		}
-		$this->select .= implode($cols, ', ').' FROM `'.$this->table.'` ';
+		$this->select .= implode($cols, ', ').' FROM '.$this->table.' ';
 		return $this;
 	}
 
