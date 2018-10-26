@@ -1,7 +1,7 @@
 <?php
-namespace system\route;
+namespace System\Route;
 use \AppException;
-use system\route\exception\NotFoundException;
+use System\Route\Exception\NotFoundException;
 
 /**
 * Router for dectect uri

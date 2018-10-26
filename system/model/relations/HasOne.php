@@ -1,5 +1,5 @@
 <?php
-namespace system\model\relations;
+namespace System\Model\Relations;
 
 /**
  * Has One - Relation
@@ -21,7 +21,7 @@ class HasOne extends HasMany
 			throw new \AppException('Cannot insert multiple records in Has One Relation!');
 		}
 
-		if(is_object($data) && is_a($data, 'system\model\Model', true)){
+		if(is_object($data) && is_a($data, 'System\Model\Model', true)){
 			$data = $data->toArray();
 		}
 

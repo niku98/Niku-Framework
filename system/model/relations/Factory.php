@@ -1,6 +1,6 @@
 <?php
-namespace system\model\relations;
-use system\patterns\Factory as FactoryPattern;
+namespace System\Model\Relations;
+use System\patterns\Factory as FactoryPattern;
 /**
  * RelationFactory
  */

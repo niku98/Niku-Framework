@@ -2,7 +2,7 @@
 
 require __DIR__.'/autoload.php';
 
-use system\console\Console;
+use System\Console\Console;
 
 $console = new Console();
 

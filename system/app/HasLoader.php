@@ -1,5 +1,5 @@
 <?php
-namespace system\app;
+namespace System\App;
 
 
 /**

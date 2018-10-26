@@ -1,6 +1,6 @@
 <?php
-namespace system\model;
-use system\supporters\Collection as BaseCollection;
+namespace System\Model;
+use System\Supporters\Collection as BaseCollection;
 
 class Collection extends BaseCollection
 {

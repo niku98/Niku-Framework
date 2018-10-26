@@ -1,7 +1,7 @@
 <?php
 
-namespace system\supporters\facades;
-use system\requests\Request as RealRequest;
+namespace System\Supporters\Facades;
+use System\Requests\Request as RealRequest;
 
 /**
  * Request class

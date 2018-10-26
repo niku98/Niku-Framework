@@ -1,5 +1,5 @@
 <?php
-namespace system\model\relations;
+namespace System\Model\Relations;
 use AppException;
 /**
  * Has One - Relation
@@ -55,7 +55,7 @@ class HasMany extends Relation
 
 	protected function processInsertOneData($data)
 	{
-		if(is_object($data) && is_a($data, 'system\model\Model', true)){
+		if(is_object($data) && is_a($data, 'System\Model\Model', true)){
 			$data = $data->toArray();
 		}
 

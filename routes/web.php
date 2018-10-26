@@ -3,11 +3,11 @@
 * list all routes in this file
 */
 
-use system\database\migration\Schema;
-use system\requests\Request;
+use System\database\Migration\Schema;
+use System\Requests\Request;
 
 Route::get('', function(){
-	return view('index');
+	return view('ad.tt');
 });
 
 Route::get('test', function(Request $request){
@@ -15,11 +15,5 @@ Route::get('test', function(Request $request){
 });
 
 Route::post('test', 'TestController@index');
-
-// Route::prefix('test', function(){
-// 	Route::post('a', function(){
-// 		return Request::all();
-// 	})->name('test_post');
-// });
 
 ?>

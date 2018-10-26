@@ -1,5 +1,5 @@
 <?php
-namespace system\supporters;
+namespace System\Supporters;
 
 /**
  * DotPath
@@ -12,19 +12,21 @@ class DotPath
 		// code...
 	}
 
-	public static function findFile(string $base, string $dots)
+	public static function findFile(string $base, string $dots, $extensions = ['php'])
 	{
 		$parts = explode('.', $dots);
 		$path = '';
 		$base = trim($base, '/');
 		foreach ($parts as $part) {
 			$path .= '/'.$part;
-			if(file_exists($base.$path)){
-				$dots = ltrim($dots, implode(explode('/', $path), '.'));
-				return [
-					'file' => $base.$path,
-					'last' => $dots
-				];
+			foreach ($extensions as $extension) {
+				if(file_exists($base.$path.'.'.$extension)){
+					$dots = ltrim($dots, implode(explode('/', $path), '.'));
+					return [
+						'file' => $base.$path.'.'.$extension,
+						'last' => $dots
+					];
+				}
 			}
 		}
 

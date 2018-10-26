@@ -1,6 +1,6 @@
 <?php
-namespace system\supporters\facades;
-use system\supporters\Time as RealTime;
+namespace System\Supporters\Facades;
+use System\Supporters\Time as RealTime;
 /**
  * Session
  */

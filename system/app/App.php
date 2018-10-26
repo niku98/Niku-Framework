@@ -1,10 +1,10 @@
 <?php
-namespace system\app;
-use system\patterns\Singleton;
-use system\app\AppException;
-use system\middlewares\TokenMiddleware;
+namespace System\App;
+use System\patterns\Singleton;
+use System\App\AppException;
+use System\middlewares\TokenMiddleware;
 use Session;
-use system\app\exception\ErrorHandler;
+use System\App\Exception\ErrorHandler;
 
 /**
  * App class

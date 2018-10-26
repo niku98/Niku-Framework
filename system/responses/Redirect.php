@@ -1,6 +1,6 @@
 <?php
-namespace system\responses;
-use system\patterns\Singleton;
+namespace System\Responses;
+use System\patterns\Singleton;
 use Session;
 use \Request;
 
@@ -55,6 +55,12 @@ class Redirect extends Singleton
 	public function with(string $name, $value){
 		Session::flash($name, $value);
 
+		return $this;
+	}
+
+	public function withError($value)
+	{
+		Session::flash('errors', $value);
 		return $this;
 	}
 

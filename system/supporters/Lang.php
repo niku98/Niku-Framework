@@ -1,7 +1,7 @@
 <?php
-namespace system\supporters;
-use system\patterns\Singleton;
-use system\supporters\DotPath;
+namespace System\Supporters;
+use System\patterns\Singleton;
+use System\Supporters\DotPath;
 use \AppException;
 
 /**
@@ -54,7 +54,7 @@ class Lang extends Singleton
 	 * Set path property
 	 *
 	 * @param     string $path
-	 * @throws	  system\app\AppException
+	 * @throws	  System\App\AppException
 	 * @return    Lang
 	 */
 	public function setPath($path='')
@@ -68,7 +68,7 @@ class Lang extends Singleton
 	 * Real Method load Language File
 	 *
 	 * @param     string $path
-	 * @throws	  system\app\AppException
+	 * @throws	  System\App\AppException
 	 * @return    Lang
 	 */
 	private function loadFileLang(){

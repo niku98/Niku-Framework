@@ -1,7 +1,7 @@
 <?php
-namespace system\database;
-use system\database\sqls\Database as SqlDatabase;
-use system\database\nosqls\Database as NoSqlDatabase;
+namespace System\database;
+use System\database\Sqls\Database as SqlDatabase;
+use System\database\NoSqls\Database as NoSqlDatabase;
 
 /**
  * Class Database for connect to database

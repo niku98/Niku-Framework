@@ -1,6 +1,6 @@
 <?php
-namespace system\model;
-use system\patterns\abstracts\HasDataProperty;
+namespace System\Model;
+use System\patterns\abstracts\HasDataProperty;
 use AppException;
 
 /**

@@ -1,5 +1,5 @@
 <?php
-namespace system\route\exception;
+namespace System\Route\Exception;
 /**
 * Token
 */

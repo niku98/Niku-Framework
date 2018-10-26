@@ -1,5 +1,5 @@
 <?php
-namespace system\app\exception;
+namespace System\App\Exception;
 use \Exception;
 use View;
 /**

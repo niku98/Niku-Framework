@@ -1,7 +1,7 @@
 <?php
-namespace system\model;
-use system\database\Database;
-use system\model\Collection;
+namespace System\Model;
+use System\database\Database;
+use System\Model\Collection;
 use \AppException;
 use Request;
 

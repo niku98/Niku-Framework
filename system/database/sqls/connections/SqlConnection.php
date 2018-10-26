@@ -1,5 +1,5 @@
 <?php
-namespace system\database\sqls\connections;
+namespace System\database\Sqls\connections;
 
 /**
  * Sql Connection

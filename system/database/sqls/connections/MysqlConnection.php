@@ -1,6 +1,6 @@
 <?php
-namespace system\database\sqls\connections;
-use system\database\sqls\connections\SqlConnection;
+namespace System\database\Sqls\connections;
+use System\database\Sqls\connections\SqlConnection;
 use mysqli;
 use AppException;
 

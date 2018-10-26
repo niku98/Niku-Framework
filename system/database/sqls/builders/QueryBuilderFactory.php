@@ -1,6 +1,6 @@
 <?php
-namespace system\database\sqls\builders;
-use system\patterns\Factory;
+namespace System\database\Sqls\builders;
+use System\patterns\Factory;
 /**
  * Query Builder Factory
  */

@@ -1,6 +1,6 @@
 <?php
 
-namespace system\patterns;
+namespace System\patterns;
 
 /**
  * Abstract Factory

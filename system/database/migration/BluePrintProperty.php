@@ -1,5 +1,5 @@
 <?php
-namespace system\database\migration;
+namespace System\database\Migration;
 
 /**
  *

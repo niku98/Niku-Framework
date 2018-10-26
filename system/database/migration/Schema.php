@@ -1,6 +1,6 @@
 <?php
-namespace system\database\migration;
-use system\database\Database;
+namespace System\database\Migration;
+use System\database\Database;
 /**
 *
 */

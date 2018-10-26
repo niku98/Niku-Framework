@@ -1,5 +1,5 @@
 <?php
-namespace system\middlewares;
+namespace System\middlewares;
 
 /**
  * Base Middleware

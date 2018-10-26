@@ -1,6 +1,6 @@
 <?php
-namespace system\model\relations;
-use system\model\Model;
+namespace System\Model\Relations;
+use System\Model\Model;
 use AppException;
 
 abstract class Relation
@@ -9,14 +9,14 @@ abstract class Relation
 	/**
 	 * Main Model in relation
 	 *
-	 * @var system\model\Model
+	 * @var System\Model\Model
 	 */
 	protected $mainModel;
 
 	/**
 	 * Sub Model in relation
 	 *
-	 * @var system\model\Model
+	 * @var System\Model\Model
 	 */
 	protected $subModel;
 
@@ -55,7 +55,7 @@ abstract class Relation
 	public function __call($method, $params)
 	{
 		$this->subModel = $this->subModel->$method(...$params);
-		if(!is_object($this->subModel) || !is_a($this->subModel, 'system\model\Model', true)){
+		if(!is_object($this->subModel) || !is_a($this->subModel, 'System\Model\Model', true)){
 			return $this->subModel;
 		}
 		return $this;

@@ -1,6 +1,6 @@
 <?php
 namespace App;
-use system\model\Model;
+use System\Model\Model;
 /**
  * User model
  */

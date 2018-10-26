@@ -1,5 +1,5 @@
 <?php
-namespace system\parterns;
+namespace System\parterns;
 
 /**
  * Dependency Injection for app

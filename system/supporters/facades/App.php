@@ -1,6 +1,6 @@
 <?php
-namespace system\supporters\facades;
-use system\app\App as Application;
+namespace System\Supporters\Facades;
+use System\App\App as Application;
 /**
  *
  */

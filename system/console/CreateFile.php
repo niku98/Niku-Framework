@@ -1,5 +1,5 @@
 <?php
-namespace system\console;
+namespace System\Console;
 
 /**
  *
@@ -10,7 +10,7 @@ class CreateFile
 		$path = __DIR__.'/../../app/'.$name.'.php';
 		$content = '<?php
 namespace App;
-use system\model\Model;
+use System\Model\Model;
 
 
 class '.$name.' extends Model
@@ -29,8 +29,8 @@ class '.$name.' extends Model
 		$path = __DIR__.'/../../app/Controllers/'.$name.'.php';
 		$content = '<?php
 namespace App\Controllers;
-use system\supporters\Controller;
-use system\requests\Request;
+use System\Supporters\Controller;
+use System\Requests\Request;
 
 class '.$name.' extends Controller
 {
@@ -46,8 +46,8 @@ class '.$name.' extends Controller
 		$path = __DIR__.'/../../app/Middlewares/'.$name.'.php';
 		$content = '<?php
 namespace App\Middlewares;
-use system\middlewares\BaseMiddleware;
-use system\requests\Request;
+use System\middlewares\BaseMiddleware;
+use System\Requests\Request;
 
 class '.$name.' extends BaseMiddleware
 {

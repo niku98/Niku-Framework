@@ -1,7 +1,7 @@
 <?php
-namespace system\requests;
-use system\supporters\File;
-use system\patterns\abstracts\HasDataProperty;
+namespace System\Requests;
+use System\Supporters\File;
+use System\patterns\abstracts\HasDataProperty;
 
 /**
  * Request class

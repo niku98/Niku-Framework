@@ -1,5 +1,5 @@
 <?php
-namespace system\app\exception;
+namespace System\App\Exception;
 use Request;
 use View;
 /**
@@ -8,11 +8,11 @@ use View;
 class ErrorHandler
 {
 	private $viewer;
-	private $baseViewPath = 'system/app/exception';
+	private $baseViewPath = 'system/App/Exception/views';
 
 	private function __construct()
 	{
-		$this->viewer = (new View('views'))->setBasePath($this->baseViewPath);
+		return $this;
 	}
 
 	public static function getHandler(){
@@ -85,7 +85,7 @@ class ErrorHandler
 	private function showReportingWithHtml($data)
 	{
 		echo response()->status(500)->body(
-			$this->viewer->setLayout('index', $data)
+			view('index')->setBasePath($this->baseViewPath)
 		);
 	}
 

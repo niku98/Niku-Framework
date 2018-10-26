@@ -1,5 +1,5 @@
 <?php
-namespace system\patterns\abstracts;
+namespace System\patterns\abstracts;
 use AppException;
 /**
  *

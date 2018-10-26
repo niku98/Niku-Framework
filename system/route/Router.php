@@ -1,11 +1,11 @@
 <?php
-namespace system\route;
+namespace System\Route;
 
-use system\supporters\facades\Request;
+use System\Supporters\Facades\Request;
 use \AppException;
-use system\supporters\CsrfToken;
+use System\Supporters\CsrfToken;
 use Session;
-use system\route\exception\TokenException;
+use System\Route\Exception\TokenException;
 
 /**
  * Router
@@ -86,7 +86,7 @@ class Router
 	 * Name this router.
 	 *
 	 * @param	  string $name
-	 * @return    system\route\Router
+	 * @return    System\Route\Router
 	 */
 	public function name($name){
 		$this->name = $name;
@@ -97,7 +97,7 @@ class Router
 	 * Add Middleware to this router
 	 *
 	 * @param	  string
-	 * @return    system\route\Router
+	 * @return    System\Route\Router
 	 */
 	public function middleware($name){
 		$this->middlewares[] = $name;

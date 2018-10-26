@@ -1,8 +1,8 @@
 <?php
 
-namespace system\responses;
-use system\supporters\Request;
-use system\supporters\File;
+namespace System\Responses;
+use System\Supporters\Request;
+use System\Supporters\File;
 /**
  * Response class | Process response data
  */

@@ -1,5 +1,5 @@
 <?php
-namespace system\supporters;
+namespace System\Supporters;
 /**
 * Base Controller
 * Parent Controller, another Controller will extend this Controller

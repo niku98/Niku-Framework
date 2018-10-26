@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
-use system\supporters\Controller;
-use system\supporters\View;
+use System\Supporters\Controller;
+use System\Supporters\View;
 /**
  * Controll errors
  */

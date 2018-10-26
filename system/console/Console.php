@@ -1,6 +1,6 @@
 <?php
 
-namespace system\console;
+namespace System\Console;
 
 /**
  *

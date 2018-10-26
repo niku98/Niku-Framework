@@ -1,5 +1,5 @@
 <?php
-namespace system\supporters;
+namespace System\Supporters;
 use Redirect;
 use Session;
 use AppException;
@@ -170,7 +170,7 @@ class Validator
 			}
 		}
 		if(!empty($message)){
-			redirect()->back()->with('validate_errors', $message)->go();
+			redirect()->back()->with('errors', $message)->go();
 		}
 	}
 

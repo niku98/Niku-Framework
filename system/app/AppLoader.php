@@ -1,5 +1,5 @@
 <?php
-namespace system\app;
+namespace System\App;
 use \ReflectionMethod;
 use \ReflectionClass;
 use Reflector;

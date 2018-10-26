@@ -1,8 +1,8 @@
 <?php
-namespace system\requests;
-use system\patterns\StaticMagic;
+namespace System\Requests;
+use System\patterns\StaticMagic;
 use \Auth;
-use system\supporters\CsrfToken;
+use System\Supporters\CsrfToken;
 
 /**
  * Session

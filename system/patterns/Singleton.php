@@ -1,5 +1,5 @@
 <?php
-namespace system\patterns;
+namespace System\patterns;
 /**
  * Singleton Abstract Class
  */

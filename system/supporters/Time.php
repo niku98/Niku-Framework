@@ -1,5 +1,5 @@
 <?php
-namespace system\supporters;
+namespace System\Supporters;
 /**
  * Time class
  */

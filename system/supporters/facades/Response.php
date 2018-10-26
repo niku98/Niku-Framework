@@ -1,7 +1,7 @@
 <?php
 
-namespace system\supporters\facades;
-use system\responses\Response as RealResponse;
+namespace System\Supporters\Facades;
+use System\Responses\Response as RealResponse;
 /**
  * Response class
  */

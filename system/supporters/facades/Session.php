@@ -1,6 +1,6 @@
 <?php
-namespace system\supporters\facades;
-use system\requests\Session as RealSession;
+namespace System\Supporters\Facades;
+use System\Requests\Session as RealSession;
 /**
  * Session
  */

@@ -1,5 +1,5 @@
 <?php
-namespace system\route\exception;
+namespace System\Route\Exception;
 use Exception;
 use Request;
 
@@ -17,7 +17,7 @@ class HttpException extends Exception
 	 *
 	 * @var string
 	 */
-	protected $baseViewPath = 'system/route/exception/views';
+	protected $baseViewPath = 'system/route/Exception/views';
 
 
 	function __construct()

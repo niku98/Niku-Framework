@@ -1,6 +1,6 @@
 <?php
 
-use system\console\Console;
+use System\Console\Console;
 
 Console::command('example', function(){
 	echo 'Example console command line!';

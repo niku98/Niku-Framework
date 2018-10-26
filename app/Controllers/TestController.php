@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
-use system\supporters\Controller;
-use system\requests\Request;
+use System\Supporters\Controller;
+use System\Requests\Request;
 
 class TestController extends Controller
 {

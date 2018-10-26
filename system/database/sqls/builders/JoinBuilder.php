@@ -1,5 +1,5 @@
 <?php
-namespace system\database\sqls\builders;
+namespace System\database\Sqls\builders;
 
 /**
  * JoinBuilder

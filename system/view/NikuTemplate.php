@@ -1,5 +1,5 @@
 <?php
-namespace system\view;
+namespace System\View;
 use AppException;
 
 /**

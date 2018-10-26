@@ -2,19 +2,19 @@
 
 return [
 	'alias' => [
-		'App' => system\supporters\facades\App::class,
-		'AppException' => system\app\exception\AppException::class,
-		'Auth' => system\supporters\Auth::class,
-		'Database' => system\database\Database::class,
-		'Route' => system\route\Route::class,
-		'Router' => system\route\Router::class,
-		'RoutePrefix' => system\route\RoutePrefix::class,
-		'RouteAction' => system\route\RouteAction::class,
-		'View' => system\view\View::class,
-		'Request' => system\supporters\facades\Request::class,
-		'Response' => system\supporters\facades\Response::class,
-		'Session' => system\supporters\facades\Session::class,
-		'Redirect' => system\supporters\facades\Redirect::class,
+		'App' => System\Supporters\Facades\App::class,
+		'AppException' => System\App\Exception\AppException::class,
+		'Auth' => System\Supporters\Auth::class,
+		'Database' => System\database\Database::class,
+		'Route' => System\Route\Route::class,
+		'Router' => System\Route\Router::class,
+		'RoutePrefix' => System\Route\RoutePrefix::class,
+		'RouteAction' => System\Route\RouteAction::class,
+		'View' => System\View\View::class,
+		'Request' => System\Supporters\Facades\Request::class,
+		'Response' => System\Supporters\Facades\Response::class,
+		'Session' => System\Supporters\Facades\Session::class,
+		'Redirect' => System\Supporters\Facades\Redirect::class,
 	]
 ];
 

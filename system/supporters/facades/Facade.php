@@ -1,6 +1,6 @@
 <?php
-namespace system\supporters\facades;
-use system\app\App;
+namespace System\Supporters\Facades;
+use System\App\App;
 abstract class Facade
 {
 

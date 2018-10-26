@@ -1,7 +1,7 @@
 <?php
-use system\view\View;
-use system\supporters\Validator;
-use system\supporters\Lang;
+use System\View\View;
+use System\Supporters\Validator;
+use System\Supporters\Lang;
 
 /*-------------------------------
 URL AND PATH
@@ -48,24 +48,11 @@ function route($name, array $data = array())
 	return $route->makeUrl($data);
 }
 
-function view($viewName,  $data = array()){
-	if(!is_string($viewName))
+function view($path,  $data = array()){
+	if(!is_string($path))
 		return;
 
-	$partss = explode('/', $viewName);
-	if(count($partss) == 1){
-		array_unshift($partss, '');
-	}else{
-		$folder = '';
-		while(count($partss) != 1){
-			$folder .= $partss[0].'/';
-			array_shift($partss);
-		}
-		array_unshift($partss, trim($folder, '/'));
-	}
-	if(!empty($data))
-		array_push($partss, $data);
-	return new View(...$partss);
+	return new View($path, $data);
 }
 
 function redirect(string $url = ''){

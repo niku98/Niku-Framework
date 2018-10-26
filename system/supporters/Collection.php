@@ -1,5 +1,5 @@
 <?php
-namespace system\supporters;
+namespace System\Supporters;
 use ArrayAccess;
 use Countable;
 use Iterator;
@@ -22,7 +22,7 @@ class Collection implements ArrayAccess, Countable, Iterator
 	 * Constructor
 	 *
 	 * @param     array
-	 * @return    system\supporters\Collection
+	 * @return    System\Supporters\Collection
 	 */
 	public function __construct(array $items)
 	{

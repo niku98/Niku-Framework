@@ -1,11 +1,11 @@
 <?php
 
-namespace system\database\sqls;
-use system\database\sqls\connections\ConnectionFactory;
-use system\database\sqls\builders\QueryBuilderFactory;
-use system\database\DatabaseInterface;
+namespace System\database\Sqls;
+use System\database\Sqls\connections\ConnectionFactory;
+use System\database\Sqls\builders\QueryBuilderFactory;
+use System\database\DatabaseInterface;
 use \AppException;
-use system\supporters\Paginator;
+use System\Supporters\Paginator;
 use Request;
 
 

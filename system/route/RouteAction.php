@@ -1,5 +1,5 @@
 <?php
-namespace system\route;
+namespace System\Route;
 
 use Request;
 use Redirect;

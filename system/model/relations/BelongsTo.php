@@ -1,5 +1,5 @@
 <?php
-namespace system\model\relations;
+namespace System\Model\Relations;
 
 /**
  * Belongs To - Relation

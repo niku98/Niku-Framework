@@ -1,6 +1,6 @@
 <?php
 
-namespace system\supporters;
+namespace System\Supporters;
 
 /**
  * Csrf Token class

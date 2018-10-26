@@ -1,7 +1,7 @@
 <?php
-namespace system\database\sqls\connections;
-use system\patterns\Factory;
-use system\database\sqls\connections\MysqlConnection;
+namespace System\database\Sqls\connections;
+use System\patterns\Factory;
+use System\database\Sqls\connections\MysqlConnection;
 use AppException;
 
 /**

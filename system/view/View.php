@@ -1,22 +1,21 @@
 <?php
-namespace system\view;
+namespace System\View;
 use AppException;
+use System\Supporters\DotPath;
 /**
  * View Class to get view for controller
  */
 class View
 {
-	protected $folder;
-	protected $file;
+	protected $path;
 	protected $layout;
 	private $data = array();
 	private $deleteAfterRun = false;
 
 
-	public function __construct(string $folder, string $file = '',array $data = array())
+	public function __construct(string $path, array $data = array())
 	{
-		$this->folder = $folder;
-		$this->file = $file;
+		$this->path = $path;
 		$this->data = $data;
 		$this->base_path = app()->config('VIEW_PATH');
 
@@ -38,25 +37,25 @@ class View
 		if($this->deleteAfterRun == true){
 			unlink($path);
 		}
+
 		return $this;
 	}
 
 	private function getConvertedFilePath()
 	{
-		$path_1 = root_path.trim($this->base_path, '/').'/'.$this->folder.'/'.$this->file.'.php';
-		if(file_exists($path_1)){
-			return $path_1;
+		$path = DotPath::findFile(root_path.trim($this->base_path), $this->path, ['niku.php', 'php']);
+
+		if(!$path){
+			throw new AppException('File path ['.$this->path.'] not found!');
 		}
 
-		$path_2 = root_path.trim($this->base_path, '/').'/'.$this->folder.'/'.$this->file.'.niku.php';
-
-		if(!file_exists($path_2)){
-			throw new AppException('File path ['.root_path.trim($this->base_path, '/').'/'.$this->folder.'/'.$this->file.'] not found!');
+		if(strpos($path['file'], 'niku.php') === false){
+			return $path['file'];
 		}
 
 		$this->deleteAfterRun = true;
 
-		return (new NikuTemplate($path_2))->convert()->save()->getSavedPath();
+		return (new NikuTemplate($path['file']))->convert()->save()->getSavedPath();
 	}
 
 	public function setBasePath(string $base_path){
@@ -64,16 +63,11 @@ class View
 		return $this;
 	}
 
-	public function setFolder(string $folder){
-		$this->folder = $folder;
-		return $this;
-	}
-
-	public function setLayout(string $file_name, array $data = array()){
+	public function setLayout(string $path, array $data = array()){
 		if(!empty($data)){
 			$this->data = $data;
 		}
-		$this->file = $file_name;
+		$this->path = $path;
 		return $this;
 	}
 

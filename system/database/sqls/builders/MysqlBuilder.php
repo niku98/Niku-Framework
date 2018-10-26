@@ -1,6 +1,6 @@
 <?php
-namespace system\database\sqls\builders;
-use system\database\sqls\builders\QueryBuilder;
+namespace System\database\Sqls\builders;
+use System\database\Sqls\builders\QueryBuilder;
 use AppException;
 /**
 * Mysql Query Builder

@@ -1,7 +1,7 @@
 <?php
 
-namespace system\supporters\facades;
-use system\responses\Redirect as RealRedirect;
+namespace System\Supporters\Facades;
+use System\Responses\Redirect as RealRedirect;
 /**
  * Request class
  * Do: Get params from user request
