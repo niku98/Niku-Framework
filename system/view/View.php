@@ -17,9 +17,14 @@ class View
 	{
 		$this->path = $path;
 		$this->data = $data;
-		$this->base_path = app()->config('VIEW_PATH');
+		$this->base_path = app()->config('view_path');
 
 		return $this;
+	}
+
+	private function _include(string $name, array $data = array())
+	{
+		return (new static($name, $data))->getLayout();
 	}
 
 	private function getFileLayout(){
@@ -46,7 +51,7 @@ class View
 		$path = DotPath::findFile(root_path.trim($this->base_path), $this->path, ['niku.php', 'php']);
 
 		if(!$path){
-			throw new AppException('File path ['.$this->path.'] not found!');
+			throw new AppException('File path ['.trim($this->base_path, '/').'/'.str_replace('.', '/', $this->path).'] not found!');
 		}
 
 		if(strpos($path['file'], 'niku.php') === false){
@@ -55,7 +60,7 @@ class View
 
 		$this->deleteAfterRun = true;
 
-		return (new NikuTemplate($path['file']))->convert()->save()->getSavedPath();
+		return (new NikuTemplate($this->base_path, $path['file']))->convert()->save()->getSavedPath();
 	}
 
 	public function setBasePath(string $base_path){
@@ -73,11 +78,6 @@ class View
 
 	public function getCurrentLayout(){
 		return $this->layout;
-	}
-
-	public function get(string $file){
-		$this->getFileLayout($file);
-		return $this;
 	}
 
 	public function with(array $data)

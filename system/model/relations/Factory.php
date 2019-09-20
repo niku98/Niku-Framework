@@ -1,10 +1,9 @@
 <?php
 namespace System\Model\Relations;
-use System\patterns\Factory as FactoryPattern;
 /**
  * RelationFactory
  */
-class Factory implements FactoryPattern
+class Factory
 {
 	public static function create()
 	{
@@ -26,6 +25,9 @@ class Factory implements FactoryPattern
 
 			case 'BelongsTo':
 				return new BelongsTo(...$params);
+				break;
+			case 'HasManyThrough':
+				return new HasManyThrough(...$params);
 				break;
 			default:
 				throw new AppException("[$name] Relation is not exists!");

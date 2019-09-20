@@ -9,8 +9,15 @@ class BelongsToMany extends Relation
 {
 	public function first()
 	{
-		$this->processConditionInRelation();
+		if($this->belongsToNull){
+			return null;
+		}
 		return $this->subModel->first();
+	}
+
+	public function all()
+	{
+		return parent::get();
 	}
 
 	public function insert()
@@ -27,10 +34,7 @@ class BelongsToMany extends Relation
 	{
 		$inserted_id = parent::insert($data)->insert_id();
 
-		Database::table($this->middleTable)->insert([
-			$this->subKey => $inserted_id,
-			$this->mainKey => $this->mainModel->getPrimaryKeyVal()
-		]);
+		$this->attachOne($inserted_id);
 
 		return $inserted_id;
 	}
@@ -46,11 +50,21 @@ class BelongsToMany extends Relation
 	}
 
 	protected function processConditionInRelation(){
-		$this->subModel = $this->subModel->where($this->subModel->getPrimaryKey(), 'IN', $this->getListSubIds());
+		$list_id = $this->getListSubIds();
+		if(count($list_id) == 0){
+			$this->belongsToNull = true;
+		}else{
+			$this->belongsToNull = false;
+			$this->subModel = $this->subModel->where($this->subModel->getPrimaryKey(), 'IN', $list_id);
+		}
+
 		return $this;
 	}
 
 	protected function getResult(){
+		if($this->belongsToNull){
+			return new \System\Supporters\Collection([]);
+		}
 		return $this->subModel->get();
 	}
 
@@ -65,7 +79,7 @@ class BelongsToMany extends Relation
 
 	private function getListSubIds()
 	{
-		$list = Database::table($this->middleTable)->select($this->subKey)
+		$list = Database::table($this->middleTable)->distinct()->select($this->subKey)
 		->where($this->mainKey, $this->mainModel->getPrimaryKeyVal())->get();
 
 		$subIds = array();
@@ -73,7 +87,75 @@ class BelongsToMany extends Relation
 			$subIds = array_merge($subIds, array_values($k));
 		}
 
+		if(empty($subIds)){
+			$subIds = [-1];
+		}
+
 		return $subIds;
+	}
+
+	public function attach($id)
+	{
+		if(is_array($id)){
+			return $this->attachMany($id);
+		}else{
+			return $this->attachOne($id);
+		}
+	}
+
+	protected function attachMany($list_id)
+	{
+		foreach ($list_id as $id) {
+			$this->attachOne($id);
+		}
+	}
+
+	protected function attachOne($inserted_id)
+	{
+		try {
+			Database::table($this->middleTable)->insert([
+				$this->subKey => $inserted_id,
+				$this->mainKey => $this->mainModel->getPrimaryKeyVal()
+			]);
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
+
+	}
+
+	public function detach($id = [])
+	{
+		if(empty($id)){
+			$id = $this->getListSubIds();
+		}
+
+		if(is_array($id)){
+			return $this->detachMany($id);
+		}else{
+			return $this->detachOne($id);
+		}
+	}
+
+	protected function detachMany($list_id)
+	{
+		foreach ($list_id as $id) {
+			$this->detachOne($id);
+		}
+
+		return $this;
+	}
+
+	protected function detachOne($inserted_id)
+	{
+		try {
+			Database::table($this->middleTable)->where($this->subKey, $inserted_id)
+			->where($this->mainKey, $this->mainModel->getPrimaryKeyVal())->delete();
+			return $this;
+		} catch (\Exception $e) {
+			return false;
+		}
+
 	}
 }
 

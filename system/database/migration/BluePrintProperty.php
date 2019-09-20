@@ -1,5 +1,5 @@
 <?php
-namespace System\database\Migration;
+namespace System\Database\Migration;
 
 /**
  *
@@ -22,8 +22,9 @@ class BluePrintProperty
 	private $onTable = '';
 	private $onDelete = '';
 
-	function __construct(string $name, string $type, int $length)
+	function __construct($name, string $type, int $length)
 	{
+		// var_dump(func_get_args()); die();
 		$this->name = $name;
 		$this->type = $type;
 		$this->length = $length;

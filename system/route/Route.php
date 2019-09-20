@@ -50,6 +50,11 @@ class Route
 			$base_url = trim(self::$prefix->url, '/').'/'.trim($base_url, '/');
 		}
 		$router = new Router($base_url, $method, $action);
+
+		if(self::$prefix->middlewares != []){
+			$router->middleware(self::$prefix->middlewares);
+		}
+
 		self::$routers[] = $router;
 		return $router;
 	}
@@ -113,7 +118,7 @@ class Route
 				if(!is_array($prefix['middlewares']))
 					$prefix['middlewares'] = array($prefix['middlewares']);
 
-				array_push( $mids, $prefix['middlewares']);
+				array_push( $mids, ...$prefix['middlewares']);
 				self::$prefix->middlewares = $mids;
 			}
 		}else{
@@ -133,15 +138,22 @@ class Route
 			$defaultAction();
 		}
 
-		$partPrefix = explode('/', self::$prefix->url);
-		array_pop($partPrefix);
-		self::$prefix->url = trim(implode($partPrefix, '/'), '/');
+		self::$prefix->url = str_replace(trim($prefix_url, '/'), '', self::$prefix->url);
 
-		$mids = self::$prefix->middlewares;
-		array_pop($mids);
-		self::$prefix->middlewares = $mids;
+		if(!empty($prefix['middlewares'])){
+			$mids = self::$prefix->middlewares;
 
-		unset($mids);
+			foreach ($prefix['middlewares'] as $k => $mid) {
+				$key = array_search($mid, $mids);
+				if($key){
+					unset($mids[$key]);
+				}
+			}
+
+			self::$prefix->middlewares = $mids;
+
+			unset($mids);
+		}
 	}
 }
 

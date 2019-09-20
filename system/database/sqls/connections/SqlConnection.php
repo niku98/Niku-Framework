@@ -1,5 +1,5 @@
 <?php
-namespace System\database\Sqls\connections;
+namespace System\Database\Sqls\connections;
 
 /**
  * Sql Connection
@@ -57,6 +57,8 @@ abstract class SqlConnection
 	abstract public function addOrderParams(array $data);
 	abstract public function addLimitParams(int $data);
 	abstract public function addOffsetParams(int $data);
+	abstract public function bindParams();
+	abstract public function getBindParams();
 }
 
 

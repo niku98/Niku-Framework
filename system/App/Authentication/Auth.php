@@ -1,5 +1,5 @@
 <?php
-namespace System\Supporters;
+namespace System\App\Authentication;
 use App\User;
 use Session;
 /**

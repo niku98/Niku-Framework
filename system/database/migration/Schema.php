@@ -1,6 +1,6 @@
 <?php
-namespace System\database\Migration;
-use System\database\Database;
+namespace System\Database\Migration;
+use System\Database\Database;
 /**
 *
 */
@@ -21,7 +21,7 @@ class Schema
 	public static function hasTable(string $table)
 	{
 		$db = static::getDatabase();
-		return (bool)$db->where('table_schema', app()->config('DB_DATABASE'))->where('table_name', $table)->count();
+		return (bool)$db->where('table_schema', app()->env('DB_DATABASE'))->where('table_name', $table)->count();
 	}
 
 	public static function create(string $name, $callable)
@@ -30,7 +30,7 @@ class Schema
 			throw new \AppException('Parameter for Schema::create function must be callable!');
 		}
 
-		$table = new BluePrint($name);
+		$table = BluePrint::create($name);
 		$callable($table);
 
 		$table->design();
@@ -42,7 +42,7 @@ class Schema
 			throw new \AppException('Parameter for Schema::create function must be callable!');
 		}
 
-		$table = new BluePrint($name);
+		$table = BluePrint::create($name);
 		$callable($table);
 
 		$table->alter();
@@ -50,7 +50,7 @@ class Schema
 
 	public static function drop(string $name)
 	{
-		$table = new BluePrint($name);
+		$table = BluePrint::create($name);
 		$table->drop();
 	}
 

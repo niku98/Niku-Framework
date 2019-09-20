@@ -1,6 +1,6 @@
 <?php
 namespace System\Requests;
-use System\patterns\StaticMagic;
+use System\Patterns\StaticMagic;
 use \Auth;
 use System\Supporters\CsrfToken;
 
@@ -33,7 +33,7 @@ class Session
 	}
 
 	public function reset_expire_time(){
-		$_SESSION['_NK_SESSION_EXPIRE_TIME'] = time() + app()->config('SESSION_EXPIRE_TIME');
+		$_SESSION['_NK_SESSION_EXPIRE_TIME'] = time() + app()->env('SESSION_EXPIRE_TIME');
 	}
 
 	public function get_id(){

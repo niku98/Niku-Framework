@@ -1,6 +1,6 @@
 <?php
 namespace System\Supporters;
-use System\patterns\Singleton;
+use System\Patterns\Singleton;
 use System\Supporters\DotPath;
 use \AppException;
 
@@ -104,7 +104,7 @@ class Lang extends Singleton
 	 * @return    string/null
 	 */
 	public function __get(string $key){
-		return $this->words[$key] ?? NULL;
+		return $this->get($key);
 	}
 
 

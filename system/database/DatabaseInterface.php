@@ -1,6 +1,6 @@
 <?php
 
-namespace System\database;
+namespace System\Database;
 
 /**
  * Interface Class for all Database

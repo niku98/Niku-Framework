@@ -322,29 +322,29 @@ class Validator
 
 	/*Validate Number*/
 	private function validateMax(string $field, $max){
-		if($this->findInData($field) !== null || !$this->validateNumeric($field))
+		if($this->findInData($field) == null || !$this->validateNumeric($field))
 			return false;
 
 		return $this->findInData($field) <= $max[0];
 	}
 
 	private function validateMin(string $field, $min){
-		if($this->findInData($field) !== null || !$this->validateNumeric($field))
+		if($this->findInData($field) == null || !$this->validateNumeric($field))
 			return false;
 
 		return $this->findInData($field) >= $min[0];
 	}
 
 	private function validateNumeric(string $field){
-		if($this->findInData($field) !== null)
+		if($this->findInData($field) == null){
 			return false;
-
+		}
 		return is_numeric($this->findInData($field));
 	}
 	/*End Validate Number*/
 
 	private function validateSame(string $root, $vals){
-		if($this->findInData($root) !== null)
+		if($this->findInData($root) == null)
 			return false;
 
 		foreach ($vals as $val) {

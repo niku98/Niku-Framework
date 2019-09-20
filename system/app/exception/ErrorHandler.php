@@ -62,9 +62,10 @@ class ErrorHandler
 
 	private function showErrorViewWithoutReportingIfDebugOff()
 	{
-		if(app()->config('APP_DEBUG') == false){
-			$this->viewer->setLayout('error_alert');
-			echo response()->status(500)->body($this->viewer);
+		if(app()->env('APP_DEBUG') == false){
+			echo response()->status(500)->contentType('text/html')->body(
+				view('error_alert')->setBasePath($this->baseViewPath)
+			);
 			die();
 		}
 	}
@@ -84,8 +85,8 @@ class ErrorHandler
 
 	private function showReportingWithHtml($data)
 	{
-		echo response()->status(500)->body(
-			view('index')->setBasePath($this->baseViewPath)
+		echo response()->status(500)->contentType('text/html')->body(
+			view('index')->setBasePath($this->baseViewPath)->with($data)
 		);
 	}
 

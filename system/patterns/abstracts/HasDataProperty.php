@@ -1,5 +1,5 @@
 <?php
-namespace System\patterns\abstracts;
+namespace System\Patterns\Abstracts;
 use AppException;
 /**
  *
@@ -17,7 +17,7 @@ trait HasDataProperty
 			if(method_exists($this, $key)){
 				return $this->$key();
 			}else {
-				throw new AppException("Property [$key] not found!");
+				throw new AppException('Class '.get_class($this).": Property [$key] not found!");
 
 			}
 		}
@@ -26,6 +26,16 @@ trait HasDataProperty
 
 	public function __set($key, $value){
 		$this->data[$key] = $value;
+	}
+
+	public function __isset($name)
+	{
+		return $this->has($name);
+	}
+
+	public function has($name)
+	{
+		return isset($this->data[$name]);
 	}
 }
 

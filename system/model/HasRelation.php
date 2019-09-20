@@ -54,6 +54,21 @@ trait HasRelation
 	public function belongsToMany(string $model, string $tableMid = '', string $this_foreign_key = '', string $target_foreign_key = ''){
 		return RelationFactory::create('BelongsToMany', $this, new $model(), $this_foreign_key, $target_foreign_key, $tableMid);
 	}
+
+	/**
+	 * has Many Relationship
+	 *
+	 * @param     string $midModel
+	 * @param     string $lastModel
+	 * @param     string $midForeignKey
+	 * @param     string $lastForeignKey
+	 * @param     string $mainPriKey
+	 * @param     string $midForeignKey
+	 * @return    HasManyThrough
+	 */
+	public function hasManyThrough(string $midModel, string $lastModel, string $midForeignKey, string $lastForeignKey, string $mainPriKey = '', string $midPriKey = ''){
+		return RelationFactory::create('HasManyThrough', $this, new $midModel(), new $lastModel, $midForeignKey, $lastForeignKey, $mainPriKey, $midPriKey);
+	}
 }
 
 

@@ -1,6 +1,6 @@
 <?php
-namespace System\database\Sqls\builders;
-use System\database\Sqls\builders\QueryBuilder;
+namespace System\Database\Sqls\builders;
+use System\Database\Sqls\builders\QueryBuilder;
 use AppException;
 /**
 * Mysql Query Builder
@@ -114,17 +114,24 @@ class MysqlBuilder extends QueryBuilder
 
 	public function addLogicClause($type, $logic, $column, $operator, $param1, $param2 = NULL)
 	{
-		$this->$type;
+		$trim_type = null;
 		if(strpos($this->$type, strtoupper($type)) === false){
 			$this->$type = strtoupper($type).' ';
+			$trim_type = 1;
 		}else if($this->$type[strlen($this->$type) - 2] != '('){
 			$this->$type .= $logic.' ';
+			$trim_type = 2;
 		}
 
 		if(strpos(strtoupper($operator), 'BETWEEN') !== false){
 			$this->$type .= $column.' '.strtoupper($operator).' ? AND ? ';
 		}elseif(strpos(strtoupper($operator), 'IN') !== false){
-			$this->$type .= $column.' '.strtoupper($operator).' ( '.str_repeat('?, ', count($param1) - 1).'? ) ';
+			if(count($param1) > 0){
+				$this->$type .= $column.' '.strtoupper($operator).' ( '.str_repeat('?, ', count($param1) - 1).'? ) ';
+
+			}else{
+				throw new AppException("There is no paramater for {$type} - IN!");
+			}
 		}else{
 			$this->$type .= $column.' '.strtoupper($operator).' ? ';
 		}

@@ -8,6 +8,9 @@ class CreateFile
 {
 	public static function model($name){
 		$path = __DIR__.'/../../app/'.$name.'.php';
+		$name_parts = preg_split('/(?=[A-Z])/',$name);
+		unset($name_parts[0]);
+		$table_name = implode($name_parts, '_') . 's';
 		$content = '<?php
 namespace App;
 use System\Model\Model;
@@ -15,7 +18,7 @@ use System\Model\Model;
 
 class '.$name.' extends Model
 {
-	protected $table = \''.strtolower($name).'\'; // Table Name
+	protected $table = \''.strtolower($table_name).'\'; // Table Name
 	protected $primaryKey = \'id\'; // Primary key in Table
 	protected $properties = [\'something\']; // Another properties in Table
 }
@@ -25,7 +28,7 @@ class '.$name.' extends Model
 		echo "Model $name created!";
 	}
 
-	public function controller($name){
+	public static function controller($name){
 		$path = __DIR__.'/../../app/Controllers/'.$name.'.php';
 		$content = '<?php
 namespace App\Controllers;
@@ -42,7 +45,7 @@ class '.$name.' extends Controller
 		echo "Controller $name created!";
 	}
 
-	public function middleware($name){
+	public static function middleware($name){
 		$path = __DIR__.'/../../app/Middlewares/'.$name.'.php';
 		$content = '<?php
 namespace App\Middlewares;

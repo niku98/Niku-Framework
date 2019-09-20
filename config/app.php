@@ -4,7 +4,7 @@ return [
 	'alias' => [
 		'App' => System\Supporters\Facades\App::class,
 		'AppException' => System\App\Exception\AppException::class,
-		'Auth' => System\Supporters\Auth::class,
+		'Auth' => System\App\Authentication\Auth::class,
 		'Database' => System\database\Database::class,
 		'Route' => System\Route\Route::class,
 		'Router' => System\Route\Router::class,
@@ -15,7 +15,12 @@ return [
 		'Response' => System\Supporters\Facades\Response::class,
 		'Session' => System\Supporters\Facades\Session::class,
 		'Redirect' => System\Supporters\Facades\Redirect::class,
-	]
+		'Time' => System\Supporters\Facades\Time::class,
+	],
+
+	'auth_user' => App\User::class,
+
+	'view_path' => 'resources/views',
 ];
 
  ?>

@@ -50,7 +50,7 @@ function route($name, array $data = array())
 
 function view($path,  $data = array()){
 	if(!is_string($path))
-		return;
+	return;
 
 	return new View($path, $data);
 }
@@ -75,8 +75,8 @@ function lang(){
 	return Lang::getInstance();
 }
 
-function __(){
-
+function env($name, $default = null){
+	return app()->env($name, $default);
 }
 
 /*------------------------------
@@ -92,20 +92,20 @@ function rand_token($lenght = 32){
 }
 
 function hex_encode($string){
-    $hex='';
-    for ($i=0; $i < strlen($string); $i++){
-        $hex .= dechex(ord($string[$i]));
-    }
-    return $hex;
+	$hex='';
+	for ($i=0; $i < strlen($string); $i++){
+		$hex .= dechex(ord($string[$i]));
+	}
+	return $hex;
 }
 
 
 function hex_decode($hex){
-    $string='';
-    for ($i=0; $i < strlen($hex)-1; $i+=2){
-        $string .= chr(hexdec($hex[$i].$hex[$i+1]));
-    }
-    return $string;
+	$string='';
+	for ($i=0; $i < strlen($hex)-1; $i+=2){
+		$string .= chr(hexdec($hex[$i].$hex[$i+1]));
+	}
+	return $string;
 }
 
 function csrf_token()
@@ -127,21 +127,21 @@ function add_style($styleName){
 
 function curl($url, array $data = array()){
 	$ch = @curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    $head[] = "Connection: keep-alive";
-    $head[] = "Keep-Alive: 300";
+	curl_setopt($ch, CURLOPT_URL, $url);
+	$head[] = "Connection: keep-alive";
+	$head[] = "Keep-Alive: 300";
 	$head[] = 'User-Agent:'.$_SERVER['HTTP_USER_AGENT'];
 
 	curl_setopt($ch, CURLOPT_POST, count($data));
 	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 130);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 130);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 
 	$html = curl_exec($ch);
 	curl_close($ch);
@@ -149,20 +149,20 @@ function curl($url, array $data = array()){
 }
 
 if (!function_exists('getallheaders')) {
-    function getallheaders() {
-    $headers = [];
-    foreach ($_SERVER as $name => $value) {
-        if (substr($name, 0, 5) == 'HTTP_') {
-            $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-        }
-    }
-    return $headers;
-    }
+	function getallheaders() {
+		$headers = [];
+		foreach ($_SERVER as $name => $value) {
+			if (substr($name, 0, 5) == 'HTTP_') {
+				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+			}
+		}
+		return $headers;
+	}
 }
 
 function loadFile($path){
 	if(file_exists(__DIR__.'/../../'.$path))
-		require_once __DIR__.'/../../'.$path;
+	require_once __DIR__.'/../../'.$path;
 }
 
 function isRegularExpression($string) {
@@ -180,17 +180,44 @@ function scriptEscape(string $html){
 
 function reArrayFiles($file_post) {
 
-    $file_ary = array();
-    $file_count = count($file_post['name']);
-    $file_keys = array_keys($file_post);
+	$file_ary = array();
+	$file_count = count($file_post['name']);
+	$file_keys = array_keys($file_post);
 
-    foreach ($file_post['name'] as $name) {
-        foreach ($file_keys as $key) {
-            $file_ary[$name][$key] = $file_post[$key][$name];
-        }
-    }
+	foreach ($file_post['name'] as $name) {
+		foreach ($file_keys as $key) {
+			$file_ary[$name][$key] = $file_post[$key][$name];
+		}
+	}
 
-    return $file_ary;
+	return $file_ary;
+}
+
+function slugify($text)
+{
+	// replace non letter or digits by -
+	$text = preg_replace('~[^\pL\d]+~u', '-', $text);
+
+	// transliterate
+	$text = iconv('utf-8', 'us-ascii//IGNORE', $text);
+
+	// remove unwanted characters
+	$text = preg_replace('~[^-\w]+~', '', $text);
+
+	// trim
+	$text = trim($text, '-');
+
+	// remove duplicate -
+	$text = preg_replace('~-+~', '-', $text);
+
+	// lowercase
+	$text = strtolower($text);
+
+	if (empty($text)) {
+		return 'n-a';
+	}
+
+	return $text;
 }
 
 ?>

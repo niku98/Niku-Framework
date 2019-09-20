@@ -29,7 +29,7 @@ class Paginator
 		]
 	];
 
-	function __construct(int $per_page, int $total_items, array $items)
+	function __construct(int $per_page, int $total_items, $items)
 	{
 		$this->total_items = $total_items;
 		$this->per_page = $per_page;
@@ -204,7 +204,7 @@ class Paginator
 		return $base.'?page='.$page;
 	}
 
-	public function show(int $maxPage)
+	public function html(int $maxPage)
 	{
 		if($this->total_pages < 2)
 			return '';

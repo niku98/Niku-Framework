@@ -1,6 +1,6 @@
 <?php
-namespace System\database\NoSqls;
-use System\database\DatabaseInterface;
+namespace System\Database\NoSqls;
+use System\Database\DatabaseInterface;
 
 /**
  *

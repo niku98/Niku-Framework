@@ -26,15 +26,17 @@ class RouteAction
 
 	private function getActionResult(){
 		$params = func_get_args();
+		ob_start();
 
 		if($this->is_callable()){
 			$action = $this->action;
-			return $action(...$params);
+			$output = $action(...$params);
+		}else{
+			$cl = $this->getClassMethod();
+			$output = $cl['class']->{$cl['method']}(...$params);
 		}
-
-		$cl = $this->getClassMethod();
-
-		return $cl['class']->{$cl['method']}(...$params);
+		ob_end_clean();
+		return $output;
 	}
 
 	private function getParametersDataFromRequest(){

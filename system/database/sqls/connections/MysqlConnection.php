@@ -1,6 +1,6 @@
 <?php
-namespace System\database\Sqls\connections;
-use System\database\Sqls\connections\SqlConnection;
+namespace System\Database\Sqls\connections;
+use System\Database\Sqls\connections\SqlConnection;
 use mysqli;
 use AppException;
 
@@ -10,25 +10,24 @@ use AppException;
 class MysqlConnection extends SqlConnection
 {
 	public function __construct($database){
-		$this->conn = new mysqli(app()->config('DB_HOST').':'.app()->config('DB_PORT'), app()->config('DB_USER'), app()->config('DB_PASSWORD'), $database);
+		$this->conn = new mysqli(app()->env('DB_HOST').':'.app()->env('DB_PORT'), app()->env('DB_USER'), app()->env('DB_PASSWORD'), $database);
 		$this->conn->set_charset('utf8');
 	}
 
 	public function exec(string $sql){
 		if($this->query = $this->conn->prepare($sql)){
-			$this->processBindParams();
 			if(count($this->bindParams)){
 				$this->query->bind_param(str_repeat('s', count($this->bindParams)), ...$this->bindParams);
 			}
 			if(!$this->query->execute()){
-				throw new AppException($this->query->error);
+				throw new AppException($this->query->error. ' | Sql: '.$sql);
 			}
 			$this->affected_rows = $this->query->affected_rows;
 			$this->insert_id = $this->query->insert_id;
 			$this->resetData();
 			return $this;
 		}else{
-			throw new AppException($this->conn->error);
+			throw new AppException($this->conn->error. ' | Sql: '.$sql);
 		}
 	}
 
@@ -54,7 +53,7 @@ class MysqlConnection extends SqlConnection
 	PROCESSING DATA METHODS
 	----------------------------------------*/
 
-	protected function processBindParams(){
+	public function bindParams(){
 		$this->bindParams = array();
 		if(!empty($this->insertData) && count($this->insertData)){
 			array_push($this->bindParams, ...$this->insertData);
@@ -93,6 +92,13 @@ class MysqlConnection extends SqlConnection
 		if(!empty($this->offsetData) && count($this->offsetData)){
 			array_push($this->bindParams, ...$this->offsetData);
 		}
+
+		return $this;
+	}
+
+	public function getBindParams()
+	{
+		return $this->bindParams;
 	}
 
 	public function addInsertParams(array $data){

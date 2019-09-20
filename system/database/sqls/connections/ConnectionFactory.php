@@ -1,13 +1,12 @@
 <?php
-namespace System\database\Sqls\connections;
-use System\patterns\Factory;
-use System\database\Sqls\connections\MysqlConnection;
+namespace System\Database\Sqls\connections;
+use System\Database\Sqls\connections\MysqlConnection;
 use AppException;
 
 /**
  * Connection Factory
  */
-class ConnectionFactory implements Factory
+class ConnectionFactory
 {
 
 	public static function create()

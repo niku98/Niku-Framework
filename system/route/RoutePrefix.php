@@ -1,7 +1,7 @@
 <?php
 namespace System\Route;
 
-use System\patterns\Singleton;
+use System\Patterns\Singleton;
 /**
  * Prefix Class | Support for Route
  */

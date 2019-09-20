@@ -1,7 +1,7 @@
 <?php
-namespace System\database;
-use System\database\Sqls\Database as SqlDatabase;
-use System\database\NoSqls\Database as NoSqlDatabase;
+namespace System\Database;
+use System\Database\Sqls\Database as SqlDatabase;
+use System\Database\NoSqls\Database as NoSqlDatabase;
 
 /**
  * Class Database for connect to database
@@ -30,7 +30,7 @@ class Database
 	 */
 	public static function __callStatic($method, $params)
 	{
-		$type = app()->config('DB_TYPE');
+		$type = app()->env('DB_TYPE');
 
 		switch ($type) {
 			case 'sql':

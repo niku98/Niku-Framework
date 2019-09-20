@@ -1,21 +1,17 @@
 <?php
 namespace System\Supporters;
+use Route;
+
 /**
 * Base Controller
 * Parent Controller, another Controller will extend this Controller
 */
 class Controller
 {
-	protected $view;
-	protected $model;
-	protected $data = [];
-
-	public function getModelName(){
-		return get_class($this->model);
-	}
-
-	public function showView($viewName, $data = []){
-		return $this->view->setLayout($viewName, !empty($data) ? $data : $this->data);
+	public $route;
+	public function __construct()
+	{
+		$this->route = Route::current();
 	}
 }
 

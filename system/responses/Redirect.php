@@ -1,6 +1,6 @@
 <?php
 namespace System\Responses;
-use System\patterns\Singleton;
+use System\Patterns\Singleton;
 use Session;
 use \Request;
 

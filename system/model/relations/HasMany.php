@@ -8,7 +8,6 @@ class HasMany extends Relation
 {
 	public function first()
 	{
-		$this->processConditionSelect();
 		return $this->subModel->first();
 	}
 
@@ -24,8 +23,9 @@ class HasMany extends Relation
 		return $this;
 	}
 
-	public function dissociate($object)
+	public function dissociate()
 	{
+		$object = func_get_args()[0];
 		if(!is_a($object, get_class($this->subModel), true)){
 			throw new AppException('Model need to dissociate must be an instance of '.get_class($this->subModel));
 		}

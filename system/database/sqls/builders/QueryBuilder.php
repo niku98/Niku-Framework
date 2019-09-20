@@ -1,5 +1,5 @@
 <?php
-namespace System\database\Sqls\builders;
+namespace System\Database\Sqls\builders;
 /**
  * QueryBuilder for Database
  */

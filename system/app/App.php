@@ -1,10 +1,11 @@
 <?php
 namespace System\App;
-use System\patterns\Singleton;
+use System\Patterns\Singleton;
 use System\App\AppException;
 use System\middlewares\TokenMiddleware;
 use Session;
 use System\App\Exception\ErrorHandler;
+use System\Supporters\EnvReader;
 
 /**
  * App class
@@ -16,10 +17,13 @@ class App
 	private $locale = '';
 	private $config;
 	private static $instance;
+	private $env;
 
 	private function __construct(){
-		$this->config = require_once root_path.'/config.php';
-		$this->locale = $this->config['NK_LOCALE'];
+		$this->config = require root_path.'config/app.php';
+		$this->env = new EnvReader(root_path.'.env');
+
+		$this->locale = $this->env['NK_LOCALE'];
 	}
 
 	public static function getInstance()
@@ -33,6 +37,11 @@ class App
 
 	public function config($key){
 		return $this->config[$key] ?? NULL;
+	}
+
+	public function env($name, $default = null)
+	{
+		return $this->env->has($name) ? $this->env[$name] : $default;
 	}
 
 	public function locale(string $locale = ''){
@@ -56,7 +65,7 @@ class App
 		Session::firstHandle();
 
 		\Route::map();
-		
+
 		Session::lastHandle();
 	}
 

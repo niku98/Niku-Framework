@@ -7,7 +7,7 @@ use System\database\Migration\Schema;
 use System\Requests\Request;
 
 Route::get('', function(){
-	return view('ad.tt');
+	return App\User::find(2)->roles()->get();
 });
 
 Route::get('test', function(Request $request){

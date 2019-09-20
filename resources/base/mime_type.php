@@ -367,7 +367,7 @@ return [
 	'wb1' => 'application/x-qpro',
 	'pcl' => 'application/x-pcl',
 	'jpe' => 'image/pjpeg',
-	'jpg' => 'image/pjpeg',
+	'jpg' => 'image/jpeg',
 	'cpp' => 'text/x-c',
 	'pct' => 'image/x-pict',
 	'wp' => 'application/wordperfect',

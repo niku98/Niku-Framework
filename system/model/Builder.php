@@ -1,6 +1,6 @@
 <?php
 namespace System\Model;
-use System\database\Database;
+use System\Database\Database;
 use System\Model\Collection;
 use \AppException;
 use Request;
@@ -41,11 +41,21 @@ class Builder
 		return $this;
 	}
 
+	public function getPrimaryKey()
+	{
+		return $this->model->getPrimaryKey();
+	}
+
+	public function getPrimaryKeyVal()
+	{
+		return $this->model->getPrimaryKeyVal();
+	}
+
 	/*----------------------------------------
 	BUILDER METHODS
 	----------------------------------------*/
 
-	public function pagination(int $per_page)
+	public function paginate(int $per_page)
 	{
 		$page = Request::has('page') ? Request::get('page') : 1;
 		$offset = ($page - 1) * $per_page;
@@ -54,12 +64,10 @@ class Builder
 
 		$list_array = $db->limit($per_page)->offset($offset)->get();
 		$items = array();
-
 		foreach ($list_array as $array) {
 			$items[] = $this->model->newInstance($array);
 		}
-
-		return $this->db->pagination($per_page, $items);
+		return $this->db->paginate($per_page, $items);
 	}
 
 	public function insert(){

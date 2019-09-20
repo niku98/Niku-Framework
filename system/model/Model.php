@@ -1,12 +1,13 @@
 <?php
 namespace System\Model;
-use System\patterns\abstracts\HasDataProperty;
+use System\Patterns\Abstracts\HasDataProperty;
+use System\Patterns\Abstracts\NkArrayAccess;
 use AppException;
 
 /**
  * Parent Model for another model extends
  */
-class Model
+class Model extends NkArrayAccess
 {
 	use HasRelation;
 	use HasDataProperty;
@@ -36,11 +37,17 @@ class Model
 
 	public function __get(string $name){
 		if(!in_array($name, $this->hiddens)){
-			if(isset($this->data[$name]))
+			if(isset($this->data[$name])){
 				return $this->data[$name];
+			}else if(\method_exists($this, $name)){
+				$result = $this->{$name}();
+				if($result instanceof \System\Model\Relations\Relation || $result instanceof \System\Model\Relations\HasManyThrough){
+					return $result->get();
+				}
+			}
 		}
 
-		throw new AppException($name.' is undefined!');
+		throw new AppException($name.' is undefined in Model ['.get_called_class().']!');
 	}
 
 	public function __debugInfo(){

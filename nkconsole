@@ -1,11 +1,11 @@
 <?php
 
 require __DIR__.'/autoload.php';
+define('root_path', __DIR__.'/');
 
 use System\Console\Console;
 
 $console = new Console();
-
 $console->run();
 
  ?>

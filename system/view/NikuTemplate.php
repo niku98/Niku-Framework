@@ -1,6 +1,7 @@
 <?php
 namespace System\View;
 use AppException;
+use System\Supporters\DotPath;
 
 /**
  *
@@ -14,9 +15,11 @@ class NikuTemplate
 	private $sections = [];
 	private $savedPath = '';
 	private $for_include;
+	private $base_path;
 
-	function __construct($path, $for_include = false)
+	function __construct($base_path, $path, $for_include = false)
 	{
+		$this->base_path = $base_path;
 		$this->content = file_get_contents($path);
 		$this->for_include = $for_include;
 		return $this;
@@ -64,7 +67,7 @@ class NikuTemplate
 	{
 		$regex = $multiline ? '/'.$regex.'/s' : '/'.$regex.'/';
 		try {
-			$this->content = preg_replace($regex, $replacement, $this->content);
+				$this->content = preg_replace($regex, $replacement, $this->content);
 		} catch (\Exception $e) {
 			var_dump($regex, $replacement); exit;
 		}
@@ -98,27 +101,26 @@ class NikuTemplate
 		$paths = $this->findWithRegex('/@extends\(\'(.*)\'\)/', 'content');
 		if(count($paths[1]) === 1){
 			$path = $paths[1][0];
-			$path = root_path.'resources/views/'.$path.'.niku.php';
-			if(!file_exists($path)){
-				throw new AppException('NikuTemplate with path ['.$path.'] is not exists!');
+			$path = DotPath::findFile(root_path.trim($this->base_path), $path, ['niku.php', 'php']);
+			if(!file_exists($path['file'])){
+				throw new AppException('NikuTemplate with path ['.trim($this->base_path, '/').'/'.str_replace('.', '/', $path).'] is not exists!');
 			}
 
-			$this->extended = (new NikuTemplate($path, true))->convert()->getContent();
+			$this->extended = (new NikuTemplate($this->base_path, $path['file'], true))->convert()->getContent();
 		}
 	}
 
 	private function getIncludedTemplate()
 	{
-		$paths = $this->findWithRegex('/@include\(\'(.*)\'\)/', 'content');
-		if(count($paths[1]) > 0){
-			$file_paths = $paths[1];
-			foreach ($file_paths as $file_path) {
-				$path = root_path.'resources/views/'.$file_path.'.niku.php';
-				if(!file_exists($path)){
-					throw new AppException('NikuTemplate with path ['.$path.'] is not exists!');
+		$paths = $this->findWithRegex('/@include\(( ?\'(.*?)\' ?,? ?(.*\)?)? ?)\)/', 'content');
+		if(count($paths[2]) > 0){
+			$file_paths = $paths[2];
+			foreach ($file_paths as $key => $file_path) {
+				$path = DotPath::findFile(root_path.trim($this->base_path), $file_path, ['niku.php', 'php']);
+				if(!file_exists($path['file'])){
+					throw new AppException('NikuTemplate with path ['.trim($this->base_path, '/').'/'.str_replace('.', '/', $file_path).'] is not exists!');
 				}
-
-				$this->included[$file_path] = (new NikuTemplate($path, true))->convert()->getContent();
+				$this->included[$paths[1][$key]] = '<?= $this->_include("' . $file_path . '"' . (!empty($paths[3][$key]) ? ', '.$paths[3][$key] : '') . ') ?>';
 			}
 		}
 	}
@@ -126,14 +128,14 @@ class NikuTemplate
 	private function getSectionTemplate()
 	{
 		//Type 1
-		$paths = $this->findWithRegex('/@section\( ?\'(.*?)\' ?, ?\'(.*)\' ?\)/', 'content');
+		$paths = $this->findWithRegex('/@section\( ?\'(.*?)\' ?, ?(.*?) ?\)/', 'content');
 		if(count($paths[1]) > 0){
 			$yeld_names = $paths[1];
 			foreach ($yeld_names as $k => $yeld_name) {
 				$content = $paths[2][$k];
-				$this->sections[$yeld_name] = $content;
+				$this->sections[$yeld_name] = '<?= '. $content . ' ?>';
 				$yeld_name = str_replace('/', '\/', $yeld_name);
-				$this->replaceContentWithRegex('@section\(\''.$yeld_name.'\', ?\'(.*?)\' ?\)', '', true);
+				$this->replaceContentWithRegex('@section\(\''.$yeld_name.'\', ?(.*?) ?\)', '', true);
 			}
 		}
 
@@ -173,16 +175,15 @@ class NikuTemplate
 			$this->content = $this->extended;
 		}
 
-		$this->replaceIncluded();
 		$this->replaceYeldWithSection();
 		$this->pushToStack();
+		$this->replaceIncluded();
 	}
 
 	private function replaceIncluded()
 	{
 		foreach ($this->included as $name => $content ) {
-			$name = str_replace('/', '\/', $name);
-			$regex = "@include\('$name'\)";
+			$regex = "@include\(" . preg_quote($name) . "\)";
 			$this->replaceContentWithRegex($regex, $content);
 		}
 	}

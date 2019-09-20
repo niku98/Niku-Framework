@@ -1,10 +1,9 @@
 <?php
-namespace System\database\Sqls\builders;
-use System\patterns\Factory;
+namespace System\Database\Sqls\builders;
 /**
  * Query Builder Factory
  */
-class QueryBuilderFactory implements Factory
+class QueryBuilderFactory
 {
 
 	public static function create()

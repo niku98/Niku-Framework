@@ -1,13 +1,39 @@
 <?php
-namespace System\database\Sqls\builders;
+namespace System\Database\Sqls\builders;
 
 /**
  * JoinBuilder
  */
 class JoinBuilder
 {
+	/**
+	 * Type of Join
+	 *
+	 * @var    string
+	 */
+	private $type;
+
+	/**
+	 * Join table
+	 *
+	 * @var string
+	 */
 	private $table;
+
+	/**
+	 * On Condition
+	 *
+	 * @var string
+	 */
 	private $on;
+
+	/**
+	 * The constructor
+	 *
+	 * @param	string
+	 * @param string
+	 * @return    JoinBuilder
+	 */
 	function __construct($type, $table)
 	{
 		$this->type = $type;
@@ -16,6 +42,14 @@ class JoinBuilder
 		return $this;
 	}
 
+	/**
+	 * Add On Condition
+	 *
+	 * @param	mixed
+	 * @return    JoinBuilder
+	 * @author
+	 * @copyright
+	 */
 	public function on()
 	{
 		if(is_callable(func_get_args()[0])){
@@ -36,6 +70,12 @@ class JoinBuilder
 		return $this;
 	}
 
+	/**
+	 * Add Or On Condition
+	 *
+	 * @param     mixed
+	 * @return    JoinBuilder
+	 */
 	public function orOn()
 	{
 		if(func_num_args() == 1){
@@ -59,6 +99,16 @@ class JoinBuilder
 		return $this;
 	}
 
+	/**
+	 * Handle On Condition
+	 *
+	 * @param	string
+	 * @param	string
+	 * @param	string
+	 * @param	mixed
+	 * @param	mixed
+	 * @return    JoinBuilder
+	 */
 	private function onHandle($logic, $column, $operator, $param1, $param2 = NULL)
 	{
 		if(strpos($this->on, 'ON') === false){
@@ -78,6 +128,7 @@ class JoinBuilder
 		return $this;
 	}
 
+	
 	public function groupStart($logic = 'AND')
 	{
 		if(strpos($this->on, 'ON') === false){

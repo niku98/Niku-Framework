@@ -41,6 +41,8 @@ abstract class Relation
 	 */
 	protected $middleTable;
 
+	protected $belongsToNull = false;
+
 
 	public function __construct(Model $mainModel, Model $subModel, string $mainKey, string $subKey, string $middleTable = '')
 	{
@@ -49,16 +51,19 @@ abstract class Relation
 		$this->mainKey = $mainKey;
 		$this->subKey = $subKey;
 		$this->middleTable = $middleTable;
+		$this->processConditionInRelation();
+
 		return $this;
 	}
 
 	public function __call($method, $params)
 	{
 		$this->subModel = $this->subModel->$method(...$params);
-		if(!is_object($this->subModel) || !is_a($this->subModel, 'System\Model\Model', true)){
-			return $this->subModel;
+		if(is_a($this->subModel, 'System\Model\Builder', true) || is_a($this->subModel, 'System\Model\Model', true)){
+			return $this;
 		}
-		return $this;
+
+		return $this->subModel;
 	}
 
 	protected function getMainModelKeyVal()
@@ -79,26 +84,24 @@ abstract class Relation
 
 	public function delete()
 	{
-		$this->processConditionDelete();
-		return $this->subModel->delete();
+		if(!$this->belongsToNull)
+			return $this->subModel->delete();
+		return $this;
 	}
 
 	public function count()
 	{
-		$this->processConditionInRelation();
 		return $this->subModel->count();
 	}
 
 	public function get()
 	{
-		$this->processConditionInRelation();
 		return $this->getResult();
 	}
 
 	public function update()
 	{
-		$this->processConditionInRelation();
-		return $this->subModel->update();
+		return $this->subModel->update(...func_get_args());
 	}
 
 	abstract protected function processInsertData();

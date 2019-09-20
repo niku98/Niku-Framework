@@ -54,7 +54,7 @@ class Collection implements ArrayAccess, Countable, Iterator
 	}
 
 	/**
-	 * Method to heck if offset item exists
+	 * Method to check if offset item exists
 	 *
 	 * @param     mixed
 	 * @return    bool
@@ -97,26 +97,56 @@ class Collection implements ArrayAccess, Countable, Iterator
 		unset($this->items[$offset]);
 	}
 
+	/**
+	 * Reset items's internal pointer to the first element
+	 *
+	 * @param void
+	 * @return    mixed
+	 */
 	public function rewind()
     {
-        reset($this->items);
+        return reset($this->items);
     }
 
+	/**
+	 * Return current element in array items
+	 *
+	 * @param	void
+	 * @return    mixed
+	 */
     public function current()
     {
         return current($this->items);
     }
 
+	/**
+	 * Return index element of the current items position
+	 *
+	 * @param	void
+	 * @return    mixed
+	 */
     public function key()
     {
         return key($this->items);
     }
 
+	/**
+	 * Return next element of items
+	 *
+	 * @param     void
+	 * @return    mixed
+	 */
     public function next()
     {
         return next($this->items);
     }
 
+	/**
+	 * Check if current array items is valid
+	 *
+	 * @param     void
+	 * @return    bool
+	 */
     public function valid()
     {
         $key = key($this->items);

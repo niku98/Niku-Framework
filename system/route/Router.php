@@ -100,7 +100,10 @@ class Router
 	 * @return    System\Route\Router
 	 */
 	public function middleware($name){
-		$this->middlewares[] = $name;
+		if(!is_array($name)){
+			$name = [$name];
+		}
+		array_push($this->middlewares, ...$name);
 		return $this;
 	}
 
@@ -226,6 +229,10 @@ class Router
 		$base_parts = explode('/', $this->uri);
 		$check_parts = explode('/', $uri);
 
+		if(count($base_parts) !== count($check_parts)){
+			return false;
+		}
+
 		$full_matches = count($base_parts);
 		$matched = 0;
 
@@ -309,7 +316,7 @@ class Router
 			$middlewareCheck = false;
 
 			foreach ($this->middlewares as $middleware) {
-				$midClass = 'middlewares\\'.$middleware;
+				$midClass = 'App\Middlewares\\'.$middleware;
 				$midClass = new $midClass();
 				$middlewareCheck = $midClass->handle();
 				if(is_object($middlewareCheck)){
@@ -336,7 +343,12 @@ class Router
 	}
 
 	public function doAction(){
-		$this->action->do();
+		try {
+			$this->action->do();
+		} catch (\Exception $e) {
+			throw $e;
+		}
+
 	}
 }
 

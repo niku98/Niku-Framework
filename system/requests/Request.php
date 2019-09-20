@@ -1,7 +1,7 @@
 <?php
 namespace System\Requests;
-use System\Supporters\File;
-use System\patterns\abstracts\HasDataProperty;
+use System\Supporters\Storages\FileUpload;
+use System\Patterns\Abstracts\HasDataProperty;
 
 /**
  * Request class
@@ -84,13 +84,13 @@ class Request
 
 			$list = array();
 			foreach ($_FILES[$name] as $file) {
-				$list[] = new File($file, 'uploaded');
+				$list[] = new FileUpload($file);
 			}
 
 			return $list;
 		}
 
-		return new File($_FILES[$name], 'uploaded');
+		return new FileUpload($_FILES[$name]);
 	}
 
 	public function all(){

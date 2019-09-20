@@ -1,6 +1,7 @@
 <?php
 namespace App;
 use System\Model\Model;
+use System\App\Authentication\Authenticate;
 /**
  * User model
  */
@@ -11,29 +12,10 @@ class User extends Model
 
 	protected $properties = ['username', 'passsword', 'name', 'auth', 'created_at', 'updated_at'];
 
-	public function save(){
-		$primaryKey = $this->primaryKey;
-		$this->changeTable();
-		if(!empty($this->data[$primaryKey])){
-			self::$db->where($primaryKey, $this->$primaryKey)->update($this->data);
-			if(self::$db->affected_rows() != 0)
-				return true;
-			return false;
-
-		}else{
-			$this->salt_token = rand_token(12);
-			$this->password = md5($this->password).md5($this->salt_token);
-
-			self::$db->insert($this->data);
-			$this->$primaryKey = self::$db->insert_id();
-			if($this->$primaryKey != 0)
-				return true;
-		}
-		return false;
-	}
+	use Authenticate;
 
 	public function roles(){
-		return $this->belongsToMany('App\Role', 'role_user', 'user_id', 'role_id');
+		return $this->belongsToMany('App\Role', 'user_role', 'user_id', 'role_id');
 	}
 }
 

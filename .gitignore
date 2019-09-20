@@ -1,7 +1,11 @@
-/config.php
+/app
 /resources
-/models
-/library
-/controllers
-!/models/User.php
-!/controllers/ErrorController.php
+/public
+/routes
+
+!/app/User.php
+!/resources/base
+!/resources/languages
+!/public/index.php
+!/public/.htaccess
+!/public/web.config

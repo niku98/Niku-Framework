@@ -1,11 +1,12 @@
 <?php
 
-namespace System\database\Sqls;
-use System\database\Sqls\connections\ConnectionFactory;
-use System\database\Sqls\builders\QueryBuilderFactory;
-use System\database\DatabaseInterface;
+namespace System\Database\Sqls;
+use System\Database\Sqls\connections\ConnectionFactory;
+use System\Database\Sqls\builders\QueryBuilderFactory;
+use System\Database\DatabaseInterface;
 use \AppException;
 use System\Supporters\Paginator;
+use System\Supporters\Collection;
 use Request;
 
 
@@ -17,6 +18,9 @@ class Database implements DatabaseInterface
 	private $builder;
 	private $sql;
 
+	private static $queryLogStatus = false;
+	private static $queryLogs = [];
+
 	private static $rawSql = false;
 
 	protected $table;
@@ -27,8 +31,8 @@ class Database implements DatabaseInterface
 	*/
 	function __construct($tableName = '')
 	{
-		$driver = $this->connection ?? app()->config('DB_CONNECTION');
-		$database = $this->database ?? app()->config('DB_DATABASE');
+		$driver = $this->connection ?? app()->env('DB_CONNECTION');
+		$database = $this->database ?? app()->env('DB_DATABASE');
 
 		$this->connector = ConnectionFactory::create($driver, $database);
 		$this->builder = QueryBuilderFactory::create($driver);
@@ -36,6 +40,12 @@ class Database implements DatabaseInterface
 		$this->table = $tableName;
 
 		$this->builder->table($this->table);
+	}
+
+	public function __clone()
+	{
+		$this->connector = clone $this->connector;
+		$this->builder = clone $this->builder;
 	}
 
 	public function close(){
@@ -51,6 +61,21 @@ class Database implements DatabaseInterface
 	{
 		$this->connector->exec($sql);
 		return $this;
+	}
+
+	public static function queryLogOn()
+	{
+		self::$queryLogStatus = true;
+	}
+
+	public static function queryLogOff()
+	{
+		self::$queryLogStatus = false;
+	}
+
+	public static function getQueryLogs()
+	{
+		return self::$queryLogs;
 	}
 
 	/*----------------------------------------
@@ -117,7 +142,6 @@ class Database implements DatabaseInterface
 			$this->builder->addLogicClause('where', 'AND', ...func_get_args());
 		}else{
 			throw new AppException("Number of parameters is not valid for method where()", 1);
-			die();
 		}
 
 		$this->connector->logicParamsProcess('where', ...func_get_args());
@@ -145,7 +169,6 @@ class Database implements DatabaseInterface
 			$this->builder->addLogicClause('where', 'OR', ...func_get_args());
 		}else{
 			throw new AppException("Number of parameters is not valid for method orWhere()", 1);
-			die();
 		}
 
 		$this->connector->logicParamsProcess('where', ...func_get_args());
@@ -173,7 +196,6 @@ class Database implements DatabaseInterface
 			$this->builder->addLogicClause('having', 'AND', ...func_get_args());
 		}else{
 			throw new AppException("Number of parameters is not valid for method having()", 1);
-			die();
 		}
 
 		$this->connector->logicParamsProcess('having', ...func_get_args());
@@ -201,7 +223,6 @@ class Database implements DatabaseInterface
 			$this->builder->addLogicClause('having', 'OR', ...func_get_args());
 		}else{
 			throw new AppException("Number of parameters is not valid for method orHaving()", 1);
-			die();
 		}
 
 		$this->connector->logicParamsProcess('having', ...func_get_args());
@@ -214,7 +235,6 @@ class Database implements DatabaseInterface
 
 		if(count($data) < 1){
 			throw new AppException("Number of parameters is not valid for method groupBy()", 1);
-			die();
 		}
 
 		$this->builder->addGroupByClause($data);
@@ -227,7 +247,6 @@ class Database implements DatabaseInterface
 
 		if(count($data) < 1){
 			throw new AppException("Number of parameters is not valid for method orderBy()", 1);
-			die();
 		}
 
 		$this->builder->addOrderClause($data);
@@ -264,10 +283,16 @@ class Database implements DatabaseInterface
 	}
 
 	public final function insertOne(array $data){
-		$this->builder->addInsertClause(array_keys($data));
-		$this->connector->addInsertParams(array_values($data));
+		$sql = $this->builder->addInsertClause(array_keys($data))->getInsertQuery();
+		$bindParams = $this->connector->addInsertParams(array_values($data))->bindParams()->getBindParams();
+		if(self::$queryLogStatus){
+			self::$queryLogs[] = array(
+				'sql' => $sql,
+				'bind_params' => $bindParams
+			);
+		}
 
-		$this->connector->exec($this->builder->getInsertQuery());
+		$this->connector->exec($sql);
 
 		return $this;
 	}
@@ -275,26 +300,48 @@ class Database implements DatabaseInterface
 	public final function insertMany(array $data){
 		$keys = array_keys($data[0]);
 		sort($keys);
-		$this->builder->addInsertManyClause($keys, count($data));
-		$this->connector->addInsertManyParams(array_values($data));
+		$sql = $this->builder->addInsertManyClause($keys, count($data))->getInsertManyQuery();
+		$bindParams = $this->connector->addInsertManyParams(array_values($data))->bindParams()->getBindParams();
 
-		$this->connector->exec($this->builder->getInsertManyQuery());
+		if(self::$queryLogStatus){
+			self::$queryLogs[] = array(
+				'sql' => $sql,
+				'bind_params' => $bindParams
+			);
+		}
+
+		$this->connector->exec($sql);
 
 		return $this;
 	}
 
 	public final function update(array $data){
-		$this->builder->addUpdateClause(array_keys($data));
-		$this->connector->addUpdateParams(array_values($data));
+		$sql = $this->builder->addUpdateClause(array_keys($data))->getUpdateQuery();
+		$bindParams = $this->connector->addUpdateParams(array_values($data))->bindParams()->getBindParams();
 
-		$this->connector->exec($this->builder->getUpdateQuery());
+		if(self::$queryLogStatus){
+			self::$queryLogs[] = array(
+				'sql' => $sql,
+				'bind_params' => $bindParams
+			);
+		}
+
+		$this->connector->exec($sql);
 		return $this;
 	}
 
 	public function delete(){
-		$this->builder->addDeleteClause();
+		$sql = $this->builder->addDeleteClause()->getDeleteQuery();
+		$bindParams = $this->connector->bindParams()->getBindParams();
 
-		$this->connector->exec($this->builder->getDeleteQuery());
+		if(self::$queryLogStatus){
+			self::$queryLogs[] = array(
+				'sql' => $sql,
+				'bind_params' => $bindParams
+			);
+		}
+
+		$this->connector->exec($sql);
 		return $this;
 	}
 
@@ -309,19 +356,38 @@ class Database implements DatabaseInterface
 	// Get Query Result
 	// Return data: Array of result
 	public function get(){
+		$sql = $this->builder->getSelectQuery();
+		$bindParams = $this->connector->bindParams()->getBindParams();
 
-		$this->connector->exec($this->builder->getSelectQuery())->get_result();
+		if(self::$queryLogStatus){
+			self::$queryLogs[] = array(
+				'sql' => $sql,
+				'bind_params' => $bindParams
+			);
+		}
+
+		$this->connector->exec($sql)->get_result();
 		$result = array();
 		while ($row = $this->connector->fetch()) {
 			array_push($result, $row);
 		}
-		return $result;
+		return new Collection($result);
 	}
 
 	// Get first result of query result
 	// Return First result value
 	public function first(){
-		$this->connector->exec($this->builder->getSelectQuery())->get_result();
+		$sql = $this->builder->getSelectQuery();
+		$bindParams = $this->connector->bindParams()->getBindParams();
+
+		if(self::$queryLogStatus){
+			self::$queryLogs[] = array(
+				'sql' => $sql,
+				'bind_params' => $bindParams
+			);
+		}
+
+		$this->connector->exec($sql)->get_result();
 		return $this->connector->fetch();
 	}
 
@@ -329,7 +395,17 @@ class Database implements DatabaseInterface
 	// Return integer - num_rows
 	public function count(){
 		if($this->connector->num_rows == -1){
-			$this->connector->exec($this->builder->getSelectQuery())->get_result();
+			$bindParams = $this->connector->bindParams()->getBindParams();
+			$sql = $this->builder->getSelectQuery();
+
+			if(self::$queryLogStatus){
+				self::$queryLogs[] = array(
+					'sql' => $sql,
+					'bind_params' => $bindParams
+				);
+			}
+
+			$this->connector->exec($sql)->get_result();
 		}
 		return $this->connector->num_rows;
 	}
@@ -350,21 +426,23 @@ class Database implements DatabaseInterface
 		return $this->connector->fetch($type);
 	}
 
-	public function pagination(int $per_page, array $items = NULL)
+	public function paginate(int $per_page, array $items = NULL)
 	{
-		$old_builder = clone $this->builder;
-		$old_connector = clone $this->connector;
-
-		$total_items = $old_connector->exec($old_builder->getSelectQuery())->get_result()->num_rows;
 		if(!is_array($items)){
+			$old_builder = clone $this->builder;
+			$old_connector = clone $this->connector;
+
+			$total_items = $old_connector->exec($old_builder->getSelectQuery())->get_result()->num_rows;
+
 			$request = Request::getInstance();
 			$page = $request->has('page') ? $request->get('page') : 1;
 			$offset = ($page - 1) * $per_page;
 
 			$items = $this->limit($per_page)->offset($offset)->get();
+		}else{
+			$total_items = $this->count();
 		}
-
-		return new Paginator($per_page, $total_items, $items);
+		return (new Paginator($per_page, $total_items, $items));
 	}
 }
 
